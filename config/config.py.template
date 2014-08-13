@@ -240,6 +240,8 @@ MLLIB_COMMON_OPTS = COMMON_OPTS + [
     OptionSet("random-seed", [5])
 ]
 
+# Algorithms available in Spark-1.0 #
+
 # Regression and Classification Tests #
 MLLIB_REGRESSION_CLASSIFICATION_TEST_OPTS = MLLIB_COMMON_OPTS + [
     # The number of rows or examples
@@ -324,9 +326,9 @@ MLLIB_DECISION_TREE_TEST_OPTS = MLLIB_COMMON_OPTS + [
     OptionSet("reg-param", [0], can_scale=False)
 ]
 
-#MLLIB_TESTS += [("decision-tree", "mllib.perf.TestRunner", SCALE_FACTOR,
+#MLLIB_TESTS += [("decision-tree-1.0", "mllib.perf.TestRunner", SCALE_FACTOR,
 #    COMMON_JAVA_OPTS,
-#    [ConstantOption("decision-tree")] + MLLIB_DECISION_TREE_TEST_OPTS)]
+#    [ConstantOption("decision-tree-1.0")] + MLLIB_DECISION_TREE_TEST_OPTS)]
 
 # Recommendation Tests #
 MLLIB_RECOMMENDATION_TEST_OPTS = MLLIB_COMMON_OPTS + [
@@ -388,6 +390,12 @@ MLLIB_LINALG_TEST_OPTS = MLLIB_COMMON_OPTS + [
 
 #MLLIB_TESTS += [("summary-statistics", "mllib.perf.TestRunner", SCALE_FACTOR,
 #    COMMON_JAVA_OPTS, [ConstantOption("summary-statistics")] + MLLIB_LINALG_TEST_OPTS)]
+
+# Algorithms available with Spark-1.1 #
+
+#MLLIB_TESTS += [("decision-tree-1.1", "mllib.perf.TestRunner", SCALE_FACTOR,
+#    COMMON_JAVA_OPTS,
+#    [ConstantOption("decision-tree-1.1")] + MLLIB_DECISION_TREE_TEST_OPTS)]
 
 # Statistic Toolkit Tests #
 MLLIB_STATS_TEST_OPTS = MLLIB_COMMON_OPTS + [

@@ -1,5 +1,6 @@
-package mllib.perf
+package mllib.perf.onepointoh
 
+import mllib.perf.PerfTest
 import mllib.perf.util.DataGenerator
 import org.apache.spark.SparkContext
 import org.apache.spark.mllib.linalg.distributed.RowMatrix

@@ -1,5 +1,8 @@
 package mllib.perf
 
+import mllib.perf.onepointoh._
+import mllib.perf.onepointone._
+
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 
@@ -25,7 +28,8 @@ object TestRunner {
         case "naive-bayes" => new NaiveBayesTest(sc)
         case "svm" => new SVMTest(sc)
         case "kmeans" => new KMeansTest(sc)
-        case "decision-tree" => new DecisionTreeTest(sc)
+        case "decision-tree-1.0" => new onepointoh.DecisionTreeTest(sc)
+        case "decision-tree-1.1" => new onepointone.DecisionTreeTest(sc)
         case "svd" => new SVDTest(sc)
         case "pca" => new PCATest(sc)
         case "summary-statistics" => new ColumnSummaryStatisticsTest(sc)
