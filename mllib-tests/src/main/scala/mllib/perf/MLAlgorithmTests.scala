@@ -412,6 +412,7 @@ class LogisticRegressionTest(sc: SparkContext)
   }
 }
 
+/*
 class LogisticRegressionWithLBFGSTest(sc: SparkContext)
   extends LogisticRegressionTest(sc) {
 
@@ -432,6 +433,7 @@ class LogisticRegressionWithLBFGSTest(sc: SparkContext)
       .run(rdd)
   }
 }
+*/
 
 class NaiveBayesTest(sc: SparkContext) extends ClassificationTest[NaiveBayesModel](sc) {
 
@@ -524,18 +526,23 @@ class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
     val labelType: Int = intOptionValue(LABEL_TYPE)
     val treeDepth: Int = intOptionValue(TREE_DEPTH)
     val maxBins: Int = intOptionValue(MAX_BINS)
-    if (labelType == 0) {
-      // Regression
-      DecisionTree.train(rdd, Regression, Variance, treeDepth, 0, maxBins, QuantileStrategy.Sort,
-        categoricalFeaturesInfo)
-    } else if (labelType >= 2) {
-      // Classification
-      DecisionTree.train(rdd, Classification, Gini, treeDepth, labelType,
-        maxBins, QuantileStrategy.Sort, categoricalFeaturesInfo)
-    } else {
-      throw new IllegalArgumentException(s"Bad label-type parameter " +
-        s"given to DecisionTreeTest: $labelType")
-    }
+    val model =
+      if (labelType == 0) {
+        // Regression
+        DecisionTree.train(rdd, Regression, Variance, treeDepth, 0, maxBins, QuantileStrategy.Sort,
+          categoricalFeaturesInfo)
+      } else if (labelType >= 2) {
+        // Classification
+        DecisionTree.train(rdd, Classification, Gini, treeDepth, labelType,
+          maxBins, QuantileStrategy.Sort, categoricalFeaturesInfo)
+      } else {
+        throw new IllegalArgumentException(s"Bad label-type parameter " +
+          s"given to DecisionTreeTest: $labelType")
+      }
+    println("Learned model:")
+    println(model)
+    println()
+    model
   }
 }
 
