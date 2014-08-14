@@ -263,16 +263,16 @@ MLLIB_REGRESSION_TEST_OPTS = MLLIB_REGRESSION_CLASSIFICATION_TEST_OPTS + [
 ]
 
 #MLLIB_TESTS += [("linear-regression", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS, [ConstantOption("linear-regression"), OptionSet("reg-param", [0.0])] +
-#    MLLIB_REGRESSION_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("linear-regression"), ConstantOption("1.0"),
+#    OptionSet("reg-param", [0.0])] + MLLIB_REGRESSION_TEST_OPTS)]
 
 #MLLIB_TESTS += [("lasso", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS, [ConstantOption("lasso"), OptionSet("reg-param", [0.0,1.0])] +
-#    MLLIB_REGRESSION_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("lasso"), ConstantOption("1.0"),
+#    OptionSet("reg-param", [0.0,1.0])] + MLLIB_REGRESSION_TEST_OPTS)]
 
 #MLLIB_TESTS += [("ridge-regression", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS, [ConstantOption("ridge-regression"), OptionSet("reg-param", [0.0,1.0])] +
-#    MLLIB_REGRESSION_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("ridge-regression"), ConstantOption("1.0"),
+#    OptionSet("reg-param", [0.0,1.0])] + MLLIB_REGRESSION_TEST_OPTS)]
 
 # Classification Tests #
 MLLIB_CLASSIFICATION_TEST_OPTS = MLLIB_REGRESSION_CLASSIFICATION_TEST_OPTS + [
@@ -287,21 +287,16 @@ MLLIB_CLASSIFICATION_TEST_OPTS = MLLIB_REGRESSION_CLASSIFICATION_TEST_OPTS + [
 ]
 
 #MLLIB_TESTS += [("logistic-regression", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS,
-#    [ConstantOption("logistic-regression")] + MLLIB_CLASSIFICATION_TEST_OPTS)]
-
-# Logistic Regression with L-BFGS #
-#MLLIB_TESTS += [("lr-lbfgs", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS, [ConstantOption("lr-lbfgs"), OptionSet("convergence-tol", [1e-5])] +
+#    COMMON_JAVA_OPTS, [ConstantOption("logistic-regression"), ConstantOption("1.0")] +
 #    MLLIB_CLASSIFICATION_TEST_OPTS)]
 
 #MLLIB_TESTS += [("naive-bayes", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS,
-#    [ConstantOption("naive-bayes")] + MLLIB_CLASSIFICATION_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("naive-bayes"), ConstantOption("1.0")] +
+#    MLLIB_CLASSIFICATION_TEST_OPTS)]
 
 #MLLIB_TESTS += [("svm", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS,
-#    [ConstantOption("svm")] + MLLIB_CLASSIFICATION_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("svm"), ConstantOption("1.0")] +
+#    MLLIB_CLASSIFICATION_TEST_OPTS)]
 
 # Decision Trees #
 
@@ -327,8 +322,8 @@ MLLIB_DECISION_TREE_TEST_OPTS = MLLIB_COMMON_OPTS + [
 ]
 
 #MLLIB_TESTS += [("decision-tree-1.0", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS,
-#    [ConstantOption("decision-tree-1.0")] + MLLIB_DECISION_TREE_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("decision-tree"), ConstantOption("1.0")] +
+#    MLLIB_DECISION_TREE_TEST_OPTS)]
 
 # Recommendation Tests #
 MLLIB_RECOMMENDATION_TEST_OPTS = MLLIB_COMMON_OPTS + [
@@ -349,8 +344,8 @@ MLLIB_RECOMMENDATION_TEST_OPTS = MLLIB_COMMON_OPTS + [
 ]
 
 #MLLIB_TESTS += [("als", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS,
-#    [ConstantOption("als")] + MLLIB_RECOMMENDATION_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("als"), ConstantOption("1.0")] +
+#    MLLIB_RECOMMENDATION_TEST_OPTS)]
 
 # Clustering Tests #
 MLLIB_CLUSTERING_TEST_OPTS = MLLIB_COMMON_OPTS + [
@@ -365,8 +360,8 @@ MLLIB_CLUSTERING_TEST_OPTS = MLLIB_COMMON_OPTS + [
 ]
 
 #MLLIB_TESTS += [("kmeans", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS,
-#    [ConstantOption("kmeans"), OptionSet("reg-param", [0.0])] + MLLIB_CLUSTERING_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("kmeans"), ConstantOption("1.0"),
+#    OptionSet("reg-param", [0.0])] + MLLIB_CLUSTERING_TEST_OPTS)]
 
 # Linear Algebra Tests #
 MLLIB_LINALG_TEST_OPTS = MLLIB_COMMON_OPTS + [
@@ -383,19 +378,25 @@ MLLIB_LINALG_TEST_OPTS = MLLIB_COMMON_OPTS + [
 ]
 
 #MLLIB_TESTS += [("svd", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS, [ConstantOption("svd")] + MLLIB_LINALG_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("svd"), ConstantOption("1.0")] + MLLIB_LINALG_TEST_OPTS)]
 
 #MLLIB_TESTS += [("pca", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS, [ConstantOption("pca")] + MLLIB_LINALG_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("pca"), ConstantOption("1.0")] + MLLIB_LINALG_TEST_OPTS)]
 
 #MLLIB_TESTS += [("summary-statistics", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS, [ConstantOption("summary-statistics")] + MLLIB_LINALG_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("summary-statistics"), ConstantOption("1.0")] +
+#    MLLIB_LINALG_TEST_OPTS)]
 
 # Algorithms available with Spark-1.1 #
 
+# Logistic Regression with L-BFGS #
+#MLLIB_TESTS += [("lr-lbfgs", "mllib.perf.TestRunner", SCALE_FACTOR,
+#    COMMON_JAVA_OPTS, [ConstantOption("lr-lbfgs"), ConstantOption("1.1"),
+#    OptionSet("convergence-tol", [1e-5])] + MLLIB_CLASSIFICATION_TEST_OPTS)]
+
 #MLLIB_TESTS += [("decision-tree-1.1", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS,
-#    [ConstantOption("decision-tree-1.1")] + MLLIB_DECISION_TREE_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("decision-tree"), ConstantOption("1.1")] +
+#    MLLIB_DECISION_TREE_TEST_OPTS)]
 
 # Statistic Toolkit Tests #
 MLLIB_STATS_TEST_OPTS = MLLIB_COMMON_OPTS + [
@@ -408,12 +409,12 @@ MLLIB_STATS_TEST_OPTS = MLLIB_COMMON_OPTS + [
 ]
 
 #MLLIB_TESTS += [("pearson", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS, [ConstantOption("pearson"), OptionSet("num-cols", [1000], can_scale=True)]
-#    + MLLIB_STATS_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("pearson"), ConstantOption("1.1"),
+#    OptionSet("num-cols", [1000], can_scale=True)] + MLLIB_STATS_TEST_OPTS)]
 
 #MLLIB_TESTS += [("spearman", "mllib.perf.TestRunner", SCALE_FACTOR,
-#    COMMON_JAVA_OPTS, [ConstantOption("spearman"), OptionSet("num-cols", [50], can_scale=True)]
-#    + MLLIB_STATS_TEST_OPTS)]
+#    COMMON_JAVA_OPTS, [ConstantOption("spearman"), ConstantOption("1.1"),
+#    OptionSet("num-cols", [100], can_scale=True)] + MLLIB_STATS_TEST_OPTS)]
 
 # Skip downloading and building Spark
 SPARK_SKIP_PREP = False

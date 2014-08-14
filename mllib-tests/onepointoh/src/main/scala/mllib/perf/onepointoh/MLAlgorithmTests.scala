@@ -1,7 +1,6 @@
 package mllib.perf.onepointoh
 
-import mllib.perf.PerfTest
-import mllib.perf.util.DataGenerator
+import mllib.perf.onepointone.util.DataGenerator
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.mllib.classification._
@@ -487,7 +486,7 @@ abstract class DecisionTreeTests(sc: SparkContext) extends PerfTest {
 class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
 
   override def createInputData(seed: Long) = {
-    
+
   }
 
   override def runTest(rdd: RDD[LabeledPoint]) {

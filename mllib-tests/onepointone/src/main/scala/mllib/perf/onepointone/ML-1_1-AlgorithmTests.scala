@@ -1,8 +1,6 @@
 package mllib.perf.onepointone
 
-import mllib.perf.PerfTest
-import mllib.perf.onepointoh.{RegressionAndClassificationTests, LogisticRegressionTest}
-import mllib.perf.util.DataGenerator
+import mllib.perf.onepointone.util.DataGenerator
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.mllib.classification._
@@ -14,9 +12,75 @@ import org.apache.spark.mllib.tree.impurity._
 import org.apache.spark.mllib.tree.model.DecisionTreeModel
 import org.apache.spark.rdd.RDD
 
+abstract class ClassificationTest[M](sc: SparkContext)
+  extends PerfTest {
+
+  def runTest(rdd: RDD[LabeledPoint], numIterations: Int): M
+  def validate(model: M, rdd: RDD[LabeledPoint]): Double
+
+  val THRESHOLD = ("per-negative", "probability for a negative label during data generation")
+  val SCALE = ("scale-factor", "scale factor for the noise during data generation")
+  val SMOOTHING = ("nb-lambda", "the smoothing parameter lambda for Naive Bayes")
+  val NUM_EXAMPLES =  ("num-examples",   "number of examples for regression tests")
+  val NUM_FEATURES =  ("num-features",   "number of features of each example for regression tests")
+  val STEP_SIZE =     ("step-size",   "step size for SGD")
+
+  intOptions = intOptions ++ Seq(NUM_FEATURES)
+  longOptions = Seq(NUM_EXAMPLES)
+  doubleOptions = doubleOptions ++ Seq(STEP_SIZE,THRESHOLD, SCALE, SMOOTHING)
+
+  var rdd: RDD[LabeledPoint] = _
+  var testRdd: RDD[LabeledPoint] = _
+
+  val options = intOptions ++ stringOptions ++ booleanOptions ++ doubleOptions ++ longOptions
+  addOptionsToParser()
+
+  override def createInputData(seed: Long) = {
+    val numExamples: Long = longOptionValue(NUM_EXAMPLES)
+    val numFeatures: Int = intOptionValue(NUM_FEATURES)
+    val numPartitions: Int = intOptionValue(NUM_PARTITIONS)
+
+    val threshold: Double = doubleOptionValue(THRESHOLD)
+    val sf: Double = doubleOptionValue(SCALE)
+
+    val data = DataGenerator.generateClassificationLabeledPoints(sc,
+      math.ceil(numExamples * 1.25).toLong, numFeatures, threshold, sf, numPartitions, seed)
+
+    val split = data.randomSplit(Array(0.8, 0.2), seed)
+
+    rdd = split(0).cache()
+    testRdd = split(1)
+
+    // Materialize rdd
+    println("Num Examples: " + rdd.count())
+  }
+
+  def calculateAccuracy(predictions: RDD[(Double, Double)], numExamples: Long): Double = {
+    predictions.map{case (pred, label) =>
+      if (pred == label) 1.0 else 0.0
+    }.sum() * 100.0 / numExamples
+  }
+
+  override def run(): (Double, Double, Double) = {
+    val numIterations = intOptionValue(NUM_ITERATIONS)
+
+    val start = System.currentTimeMillis()
+    val model = runTest(rdd, numIterations)
+    val end = System.currentTimeMillis()
+    val time = (end - start).toDouble / 1000.0
+    val metricOnTrain = validate(model, rdd)
+    val metric = validate(model, testRdd)
+
+    (time, metricOnTrain, metric)
+  }
+
+
+
+}
+
 // Classification Algorithms
 class LogisticRegressionWithLBFGSTest(sc: SparkContext)
-  extends LogisticRegressionTest(sc) {
+  extends ClassificationTest[LogisticRegressionModel](sc) {
 
   val CONVERGENCE =  ("convergence-tol",   "convergence tolerance for l-bfgs")
 
@@ -26,6 +90,15 @@ class LogisticRegressionWithLBFGSTest(sc: SparkContext)
     doubleOptions ++ longOptions
 
   addOptionsToParser()
+
+  override def validate(model: LogisticRegressionModel, rdd: RDD[LabeledPoint]): Double = {
+    val numExamples = rdd.count()
+
+    val predictions: RDD[(Double, Double)] = rdd.map { example =>
+      (model.predict(example.features), example.label)
+    }
+    calculateAccuracy(predictions, numExamples)
+  }
 
   override def runTest(rdd: RDD[LabeledPoint], numIterations: Int): LogisticRegressionModel = {
 
@@ -41,7 +114,8 @@ class LogisticRegressionWithLBFGSTest(sc: SparkContext)
  *
  * This class is specific to [[org.apache.spark.mllib.tree.DecisionTree]].
  * It should eventually be generalized and merged with
- * [[RegressionAndClassificationTests]]
+ * RegressionAndClassificationTests
+ *
  */
 abstract class DecisionTreeTests(sc: SparkContext) extends PerfTest {
 

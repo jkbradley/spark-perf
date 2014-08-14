@@ -1,6 +1,5 @@
 package mllib.perf.onepointone
 
-import mllib.perf.PerfTest
 import org.apache.spark.SparkContext
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.random.RandomRDDGenerators

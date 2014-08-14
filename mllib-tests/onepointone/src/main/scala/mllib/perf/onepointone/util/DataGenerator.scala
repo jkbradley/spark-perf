@@ -1,4 +1,4 @@
-package mllib.perf.util
+package mllib.perf.onepointone.util
 
 import scala.collection.mutable
 
@@ -432,13 +432,12 @@ class FeaturesGenerator(val categoricalArities: Array[Int], val numContinuous: I
 
   private val rng = new java.util.Random()
 
-  private var arr = new Array[Double](numFeatures)
-
   /**
    * Generates vector with categorical features first, and continuous features in [0,1] second.
    */
   override def nextValue(): Vector = {
     // Feature ordering matches getCategoricalFeaturesInfo.
+    val arr = new Array[Double](numFeatures)
     var j = 0
     while (j < categoricalArities.size) {
       arr(j) = rng.nextInt(categoricalArities(j))
