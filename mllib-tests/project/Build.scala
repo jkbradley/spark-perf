@@ -15,8 +15,8 @@ object MyBuild extends Build {
         .dependsOn(onepointone, onepointoh)
 
     lazy val onepointoh = project
-          .settings(
-            dependencyOverrides += "org.apache.spark" %% "spark-mllib" % "1.1.0-SNAPSHOT" % "provided",
+          .settings(        //should be set to 1.0.0 or higher
+            //dependencyOverrides += "org.apache.spark" %% "spark-mllib" % "1.1.0-SNAPSHOT" % "provided",
             libraryDependencies += "net.sf.jopt-simple" % "jopt-simple" % "4.5"
           )
           .dependsOn(onepointone)

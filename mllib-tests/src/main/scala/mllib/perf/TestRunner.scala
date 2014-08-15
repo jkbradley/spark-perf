@@ -26,6 +26,9 @@ object TestRunner {
             case "decision-tree" => new onepointone.DecisionTreeTest(sc)
             case "pearson" => new PearsonCorrelationTest(sc)
             case "spearman" => new SpearmanCorrelationTest(sc)
+            case "chi-sq-feature" => new ChiSquaredFeatureTest(sc)
+            case "chi-sq-gof" => new ChiSquaredGoFTest(sc)
+            case "chi-sq-mat" => new ChiSquaredMatTest(sc)
           }
         test.initialize(testName, perfTestArgs)
         // Generate a new dataset for each test
@@ -45,7 +48,7 @@ object TestRunner {
         }
 
         println("results: " + results.map(r => "%.3f;%.3f;%.3f".format(r._1, r._2, r._3)).mkString(","))
-      }else {
+      }else if (buildDir == "1.0"){
         val test: onepointoh.PerfTest =
           testName match {
             case "linear-regression" => new LinearRegressionTest(sc)
@@ -79,6 +82,8 @@ object TestRunner {
         }
 
         println("results: " + results.map(r => "%.3f;%.3f;%.3f".format(r._1, r._2, r._3)).mkString(","))
+      }else {
+        throw new IllegalArgumentException("Please specify the release version of this algorithm")
       }
 
   }
