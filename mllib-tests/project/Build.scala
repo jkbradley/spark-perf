@@ -7,13 +7,13 @@ object MyBuild extends Build {
         settings(
           libraryDependencies += "net.sf.jopt-simple" % "jopt-simple" % "4.5",
           libraryDependencies += "org.apache.spark" %% "spark-mllib" % "1.1.1-SNAPSHOT" % "provided"
-        )
+        ).dependsOn(onepointoh)
 
     lazy val onepointoh = project.in(file("onepointoh")).
           settings(        //should be set to 1.0.0 or higher
-            libraryDependencies += "org.apache.spark" %% "spark-mllib" % "1.0.0",
+            libraryDependencies += "org.apache.spark" %% "spark-mllib" % "1.0.0" % "provided",
             libraryDependencies += "net.sf.jopt-simple" % "jopt-simple" % "4.5" 
-          ).dependsOn(onepointone)
+          )
 
    lazy val root = project.in(file(".")).
       settings(

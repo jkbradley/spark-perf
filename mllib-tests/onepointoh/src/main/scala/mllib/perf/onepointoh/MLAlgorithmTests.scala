@@ -1,6 +1,6 @@
 package mllib.perf.onepointoh
 
-import mllib.perf.onepointone.util.DataGenerator
+import mllib.perf.onepointoh.util.DataGenerator
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.mllib.classification._
