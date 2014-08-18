@@ -13,7 +13,6 @@ import org.apache.spark.mllib.tree.model.{Split, DecisionTreeModel, Node}
 import org.apache.spark.rdd.{PairRDDFunctions, RDD}
 import org.apache.spark.SparkContext
 
-
 object DataGenerator {
 
   def generateLabeledPoints(
@@ -489,7 +488,7 @@ class KMeansDataGenerator(
     val randSum = rand.sum
     val scaled = rand.map(x => x / randSum)
 
-    (0 until numCenters).map{i =>
+    (1 to numCenters).map{i =>
       scaled.slice(0, i).sum
     }
   }

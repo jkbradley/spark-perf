@@ -74,9 +74,6 @@ abstract class ClassificationTest[M](sc: SparkContext)
 
     (time, metricOnTrain, metric)
   }
-
-
-
 }
 
 // Classification Algorithms
@@ -187,7 +184,6 @@ abstract class DecisionTreeTests(sc: SparkContext) extends PerfTest {
 
     (time, trainError, testError)
   }
-
 }
 
 class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {

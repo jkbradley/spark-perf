@@ -40,7 +40,6 @@ abstract class LinearAlgebraTests(sc: SparkContext) extends PerfTest {
 
     (time, 0.0, 0.0)
   }
-
 }
 
 

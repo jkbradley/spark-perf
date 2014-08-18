@@ -11,8 +11,7 @@ object TestRunner {
         System.exit(1)
       }
       val testName = args(0)
-      val buildDir = args(1)
-      val perfTestArgs = args.slice(2, args.length)
+      val perfTestArgs = args.slice(1, args.length)
       val sc = new SparkContext(new SparkConf().setAppName("TestRunner: " + testName))
 
       // Unfortunate copy of code because there are Perf Tests in both projects and the compiler doesn't like it
@@ -50,6 +49,6 @@ object TestRunner {
 
     println("results: " + results.map(r => "%.3f;%.3f;%.3f".format(r._1, r._2, r._3)).mkString(","))
 
+    sc.stop()
   }
-
 }

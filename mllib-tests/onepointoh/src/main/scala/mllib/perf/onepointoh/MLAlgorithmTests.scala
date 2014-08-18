@@ -139,7 +139,6 @@ abstract class ClassificationTest[M](sc: SparkContext)
       if (pred == label) 1.0 else 0.0
     }.sum() * 100.0 / numExamples
   }
-
 }
 
 abstract class RecommendationTests(sc: SparkContext) extends PerfTest {
@@ -492,5 +491,4 @@ class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
   override def runTest(rdd: RDD[LabeledPoint]) {
 
   }
-
 }

@@ -36,7 +36,6 @@ abstract class StatTests[T](sc: SparkContext) extends PerfTest {
 
     (time, 0.0, 0.0)
   }
-
 }
 
 abstract class CorrelationTests(sc: SparkContext) extends StatTests[RDD[Vector]](sc){
