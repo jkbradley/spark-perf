@@ -3,7 +3,7 @@ package mllib.perf.onepointone
 import mllib.perf.onepointoh.util.DataGenerator
 import org.apache.spark.mllib.linalg.{Matrices, Vectors, Matrix, Vector}
 import org.apache.spark.SparkContext
-import org.apache.spark.mllib.random.RandomRDDGenerators
+import org.apache.spark.mllib.random.RandomRDDs
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.mllib.stat.Statistics
 import org.apache.spark.rdd.RDD
@@ -45,7 +45,7 @@ abstract class CorrelationTests(sc: SparkContext) extends StatTests[RDD[Vector]]
     val n: Int = intOptionValue(NUM_COLS)
     val numPartitions: Int = intOptionValue(NUM_PARTITIONS)
 
-    rdd = RandomRDDGenerators.normalVectorRDD(sc, m, n, numPartitions, seed).cache()
+    rdd = RandomRDDs.normalVectorRDD(sc, m, n, numPartitions, seed).cache()
 
     // Materialize rdd
     println("Num Examples: " + rdd.count())

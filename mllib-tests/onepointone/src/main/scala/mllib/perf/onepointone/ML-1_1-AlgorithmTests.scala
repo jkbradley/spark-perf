@@ -1,6 +1,7 @@
 package mllib.perf.onepointone
 
-import mllib.perf.onepointoh.util.DataGenerator
+import mllib.perf.onepointone.util.DataGenerator
+
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.mllib.classification._
@@ -82,10 +83,6 @@ abstract class ClassificationTest[M](sc: SparkContext)
 class LogisticRegressionWithLBFGSTest(sc: SparkContext)
   extends ClassificationTest[LogisticRegressionModel](sc) {
 
-  val CONVERGENCE =  ("convergence-tol",   "convergence tolerance for l-bfgs")
-
-  doubleOptions = doubleOptions ++ Seq(CONVERGENCE)
-
   override val options = intOptions ++ stringOptions  ++ booleanOptions ++
     doubleOptions ++ longOptions
 
@@ -102,10 +99,7 @@ class LogisticRegressionWithLBFGSTest(sc: SparkContext)
 
   override def runTest(rdd: RDD[LabeledPoint], numIterations: Int): LogisticRegressionModel = {
 
-    val tol = doubleOptionValue(CONVERGENCE)
-
-    new LogisticRegressionWithLBFGS().setConvergenceTol(tol).setNumIterations(numIterations)
-      .run(rdd)
+    new LogisticRegressionWithLBFGS().run(rdd)
   }
 }
 

@@ -53,6 +53,7 @@ class SVDTest(sc: SparkContext) extends LinearAlgebraTests(sc) {
 class PCATest(sc: SparkContext) extends LinearAlgebraTests(sc) {
   override def runTest(data: RowMatrix, rank: Int) {
     val principal = data.computePrincipalComponents(rank)
+    sc.broadcast(principal)
     data.multiply(principal)
   }
 }
