@@ -4,7 +4,7 @@ import scala.collection.mutable
 
 import org.apache.spark.mllib.linalg.{Vectors, Vector}
 import org.apache.spark.mllib.linalg.distributed.RowMatrix
-import org.apache.spark.mllib.random.{RandomDataGenerator, RandomRDDGenerators}
+import org.apache.spark.mllib.random.{RandomDataGenerator, RandomRDDs}
 import org.apache.spark.mllib.recommendation.Rating
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.mllib.tree.configuration.{Algo, FeatureType}
@@ -25,7 +25,7 @@ object DataGenerator {
       seed: Long = System.currentTimeMillis(),
       problem: String = ""): RDD[LabeledPoint] = {
 
-    RandomRDDGenerators.randomRDD(sc,
+    RandomRDDs.randomRDD(sc,
       new LinearDataGenerator(numCols,intercept, seed, eps, problem), numRows, numPartitions, seed)
 
   }
@@ -37,7 +37,7 @@ object DataGenerator {
       numPartitions: Int,
       seed: Long = System.currentTimeMillis()): RowMatrix = {
 
-    val data: RDD[Vector] = RandomRDDGenerators.normalVectorRDD(sc, m, n, numPartitions, seed)
+    val data: RDD[Vector] = RandomRDDs.normalVectorRDD(sc, m, n, numPartitions, seed)
 
     new RowMatrix(data,m,n)
   }
@@ -51,7 +51,7 @@ object DataGenerator {
       numPartitions: Int,
       seed: Long = System.currentTimeMillis()): RDD[LabeledPoint] = {
 
-    RandomRDDGenerators.randomRDD(sc, new ClassLabelGenerator(numCols,threshold, scaleFactor),
+    RandomRDDs.randomRDD(sc, new ClassLabelGenerator(numCols,threshold, scaleFactor),
       numRows, numPartitions, seed)
   }
 
@@ -97,7 +97,7 @@ object DataGenerator {
       Array.fill(numHighArity)(highArity))
 
     val featuresGenerator = new FeaturesGenerator(categoricalArities, numContinuous)
-    val featureMatrix = RandomRDDGenerators.randomRDD(sc, featuresGenerator,
+    val featureMatrix = RandomRDDs.randomRDD(sc, featuresGenerator,
       numRows, numPartitions, seed)
 
     // Create random DecisionTree.
@@ -227,7 +227,7 @@ object DataGenerator {
       numPartitions: Int,
       seed: Long = System.currentTimeMillis()): RDD[Vector] = {
 
-    RandomRDDGenerators.randomRDD(sc, new KMeansDataGenerator(numCenters, numCols, seed),
+    RandomRDDs.randomRDD(sc, new KMeansDataGenerator(numCenters, numCols, seed),
       numRows, numPartitions, seed)
   }
 
@@ -243,11 +243,11 @@ object DataGenerator {
       numPartitions: Int,
       seed: Long = System.currentTimeMillis()): (RDD[Rating],RDD[Rating]) = {
 
-    val train = RandomRDDGenerators.randomRDD(sc,
+    val train = RandomRDDs.randomRDD(sc,
       new RatingGenerator(numUsers, numProducts,implicitPrefs),
       numRatings, numPartitions, seed).cache()
 
-    val test = RandomRDDGenerators.randomRDD(sc,
+    val test = RandomRDDs.randomRDD(sc,
       new RatingGenerator(numUsers, numProducts,implicitPrefs),
       math.ceil(numRatings * 0.25).toLong, numPartitions, seed + 24)
 

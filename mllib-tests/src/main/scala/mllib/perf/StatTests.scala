@@ -2,7 +2,7 @@ package mllib.perf
 
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.SparkContext
-import org.apache.spark.mllib.random.RandomRDDGenerators
+import org.apache.spark.mllib.random.RandomRDDs
 import org.apache.spark.mllib.stat.Statistics
 import org.apache.spark.rdd.RDD
 
@@ -27,7 +27,7 @@ abstract class StatTests(sc: SparkContext) extends PerfTest {
     val n: Int = intOptionValue(NUM_COLS)
     val numPartitions: Int = intOptionValue(NUM_PARTITIONS)
 
-    rdd = RandomRDDGenerators.normalVectorRDD(sc, m, n, numPartitions, seed)
+    rdd = RandomRDDs.normalVectorRDD(sc, m, n, numPartitions, seed)
   }
 
   override def run(): (Double, Double, Double) = {
