@@ -1,6 +1,6 @@
 package mllib.perf.onepointone
 
-import mllib.perf.onepointoh.util.DataGenerator
+import mllib.perf.onepointone.util.DataGenerator
 import org.apache.spark.mllib.linalg.{Matrices, Vectors, Matrix, Vector}
 import org.apache.spark.SparkContext
 import org.apache.spark.mllib.random.RandomRDDs

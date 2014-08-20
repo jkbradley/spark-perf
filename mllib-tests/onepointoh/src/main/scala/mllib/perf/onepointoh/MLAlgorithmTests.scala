@@ -381,8 +381,9 @@ class ALSTest(sc: SparkContext) extends RecommendationTests(sc) {
                        numIterations: Int,
                        rank: Int): MatrixFactorizationModel = {
     val regParam = doubleOptionValue(REGULARIZATION)
+    val seed = intOptionValue(RANDOM_SEED)+12
 
-    ALS.train(rdd, rank, numIterations, regParam)
+    new ALS().setIterations(numIterations).setRank(rank).setSeed(seed).setLambda(regParam).run(rdd)
   }
 }
 
