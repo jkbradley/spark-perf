@@ -14,13 +14,13 @@ object MyBuild extends Build {
   // features from the root build. For example, in order to build with the Spark 1.0.0 release, 
   // comment out .dependsOn(onepointone) from root.
 
-    lazy val root = project.in(file(".")).aggregate(onepointoh,onepointone).
-        dependsOn(onepointoh,onepointone)
+    lazy val root = project.in(file(".")).aggregate(onepointone).
+        dependsOn(onepointone)
 
     lazy val onepointone = project
         .settings(
           libraryDependencies ++= deps,
-          libraryDependencies += "org.apache.spark" %% "spark-mllib" % "1.1.1-SNAPSHOT" % "provided"
+          libraryDependencies += "org.apache.spark" %% "spark-mllib" % "1.1.0-SNAPSHOT" % "provided"
         )
 
     lazy val onepointoh = project
