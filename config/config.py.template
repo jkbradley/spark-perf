@@ -386,7 +386,7 @@ if MLLIB_SPARK_VERSION >= 1.1:
 # operations on MLlib algorithms.
 MLLIB_COMMON_OPTS = COMMON_OPTS + [
     # The number of input partitions.
-    OptionSet("num-partitions", [400], can_scale=True),
+    OptionSet("num-partitions", [128], can_scale=True),
     # A random seed to make tests reproducable.
     OptionSet("random-seed", [5])
 ]
@@ -506,6 +506,9 @@ MLLIB_TESTS += [("decision-tree", "mllib.perf." + MLLIB_SPARK_VERSION_STR + ".Te
     MLLIB_DECISION_TREE_TEST_OPTS)]
 
 # Recommendation Tests #
+#  Note: For ALS, it can be best to use fewer partitions.
+#        E.g., if you use 128 partitions for 16 nodes with 8 cores each for most MLlib tests,
+#        you may want to use 32 partitions here.
 MLLIB_RECOMMENDATION_TEST_OPTS = MLLIB_COMMON_OPTS + [
      # The number of users
      OptionSet("num-users", [6000000], can_scale=True),
