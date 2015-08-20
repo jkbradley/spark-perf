@@ -379,6 +379,7 @@ object Config {
   }
   // TODO: tune test size to have runtime within 30-60 seconds
   val MLLIB_PREFIX_SPAN_TEST_OPTS = MLLIB_FPM_TEST_OPTS ++ Seq(
+    VariableOption("num-sequences", Seq(5000), can_scale = false),
     VariableOption("avg-sequence-size", Seq(5), can_scale = false),
     VariableOption("avg-itemset-size", Seq(1), can_scale = false),
     VariableOption("num-items", Seq(100), can_scale = false),
