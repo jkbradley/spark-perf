@@ -9,7 +9,7 @@ import org.json4s.jackson.JsonMethods._
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 
-import mllib.perf.clustering.GaussianMixtureTest
+import mllib.perf.clustering.{OnlineLDATest, EMLDATest, GaussianMixtureTest}
 import mllib.perf.feature.Word2VecTest
 import mllib.perf.fpm.{FPGrowthTest, PrefixSpanTest}
 import mllib.perf.linalg.BlockMatrixMultTest
@@ -18,6 +18,7 @@ object TestRunner {
   def run(sc: SparkContext, testName: String, perfTestArgs: Array[String]): JValue = {
     // Unfortunate copy of code because there are Perf Tests in both projects and the compiler doesn't like it
     val test: PerfTest = testName match {
+      // trees
       case "glm-regression" => new GLMRegressionTest(sc)
       case "glm-classification" => new GLMClassificationTest(sc)
       case "naive-bayes" => new NaiveBayesTest(sc)
@@ -26,6 +27,8 @@ object TestRunner {
       // clustering
       case "gmm" => new GaussianMixtureTest(sc)
       case "kmeans" => new KMeansTest(sc)
+      case "emlda" => new EMLDATest(sc)
+      case "onlinelda" => new OnlineLDATest(sc)
       // trees
       case "decision-tree" => new DecisionTreeTest(sc)
       // linalg
