@@ -406,7 +406,7 @@ MLLIB_GLM_TEST_OPTS = MLLIB_REGRESSION_CLASSIFICATION_TEST_OPTS + [
     # The step size for SGD
     OptionSet("step-size", [0.001]),
     # Regularization type: none, l1, l2
-    OptionSet("reg-type", ["l2"]),
+    OptionSet("reg-type", ["none"]),
     # Regularization parameter
     OptionSet("reg-param", [0.1])
 ]
