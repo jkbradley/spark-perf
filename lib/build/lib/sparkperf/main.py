@@ -40,9 +40,9 @@ def run_tests():
     #print "Detected project directory: %s" % PROJ_DIR
     # Import the configuration settings from the config file.
     #print "Loading configuration from %s" % args_config_file
-    #with open(args_config_file) as cf:
-    #    config = imp.load_source("config", "", cf)
-    import sparkperf.config as config
+    with open(args_config_file) as cf:
+        #config = imp.load_source("config", "", cf)
+        import sparkperf.config as config
 
     # Spark will always be built, assuming that any possible test run
     # of this program is going to depend on Spark.
