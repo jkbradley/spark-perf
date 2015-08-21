@@ -1,22 +1,19 @@
 package mllib.perf
 
 /**
- * Created by fliang on 8/20/15.
+ * @param SCALE_FACTOR The default values configured below are appropriate for approximately 20 m1.xlarge nodes,
+ *                     in which each node has 15 GB of memory. Use this variable to scale the values (e.g.
+ *                     number of records in a generated dataset) if you are running the tests with more
+ *                     or fewer nodes. When developing new test suites, you might want to set this to a small
+ *                     value suitable for a single machine, such as 0.001.
+ *
  */
-object Config {
+class Config(SCALE_FACTOR: Double = 1.0) {
   val SPARK_VERSION = 1.5
-  //  val MLLIB_OUTPUT_FILENAME = s"results/mllib_perf_output_${SPARK_VERSION}_${Calendar.getInstance().getTime}"
 
   // ============================
   //  Test Configuration Options
   // ============================
-
-  // The default values configured below are appropriate for approximately 20 m1.xlarge nodes,
-  // in which each node has 15 GB of memory. Use this variable to scale the values (e.g.
-  // number of records in a generated dataset) if you are running the tests with more
-  // or fewer nodes. When developing new test suites, you might want to set this to a small
-  // value suitable for a single machine, such as 0.001.
-  val SCALE_FACTOR = 0.000001
   assert(SCALE_FACTOR > 0, "SCALE_FACTOR must be > 0.")
 
   // If set, removes the first N trials for each test from all reported statistics. Useful for

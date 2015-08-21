@@ -45,15 +45,15 @@ object PerfSuite {
    * @param sqlContext SQLContext to run test in
    * @param mountName Path to location for storing test results
    */
-  def runSuite(sqlContext: SQLContext, mountName: String): (Seq[String], DataFrame) = {
+  def runSuite(sqlContext: SQLContext, config: Config, mountName: String): (Seq[String], DataFrame) = {
     val sc = sqlContext.sparkContext
     var failedTests = Seq[String]()
     val testResults = (for {
-      TestInstance(shortName, _, scaleFactor, optSets) <- Config.MLLIB_TESTS;
+      TestInstance(shortName, _, scaleFactor, optSets) <- config.MLLIB_TESTS;
       optSetArrays = optSets.map(i => i.toArray(scaleFactor));
-      opt_list <- optSetArrays.reduceLeft((xs, ys) => for {x <- xs; y <- ys} yield x + " " ++ y)
+      optList <- optSetArrays.reduceLeft((xs, ys) => for {x <- xs; y <- ys} yield x + " " ++ y)
     } yield {
-        val args = opt_list.split(" ")
+        val args = optList.split(" ")
         val testName = args(0)
         val perfTestArgs = args.slice(1, args.length)
         try {

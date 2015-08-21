@@ -2,17 +2,14 @@ package mllib.perf
 
 import scala.collection.JavaConverters._
 
-import org.json4s.JsonDSL._
-import org.json4s.JsonAST._
-import org.json4s.jackson.JsonMethods._
-
-import org.apache.spark.SparkConf
-import org.apache.spark.SparkContext
-
-import mllib.perf.clustering.{OnlineLDATest, EMLDATest, GaussianMixtureTest}
+import mllib.perf.clustering.{EMLDATest, GaussianMixtureTest, OnlineLDATest}
 import mllib.perf.feature.Word2VecTest
 import mllib.perf.fpm.{FPGrowthTest, PrefixSpanTest}
 import mllib.perf.linalg.BlockMatrixMultTest
+import org.json4s.JsonAST._
+import org.json4s.JsonDSL._
+
+import org.apache.spark.SparkContext
 
 object TestRunner {
   def run(sc: SparkContext, testName: String, perfTestArgs: Array[String]): JValue = {
