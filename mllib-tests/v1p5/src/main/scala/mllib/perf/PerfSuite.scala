@@ -32,7 +32,7 @@ case class FlagSet(name: String, vals: Seq[Boolean]) extends TestOption {
   }
 }
 
-case class TestInstance(shortName: String, mainClass: String, scaleFactor: Double, options: Seq[TestOption])
+case class TestInstance(shortName: String, scaleFactor: Double, options: Seq[TestOption])
 
 /**
  * The entry-point into [[mllib.perf]].
@@ -49,7 +49,7 @@ object PerfSuite {
     val sc = sqlContext.sparkContext
     var failedTests = Seq[String]()
     val testResults = (for {
-      TestInstance(shortName, _, scaleFactor, optSets) <- config.MLLIB_TESTS;
+      TestInstance(shortName, scaleFactor, optSets) <- config.MLLIB_TESTS;
       optSetArrays = optSets.map(i => i.toArray(scaleFactor));
       optList <- optSetArrays.reduceLeft((xs, ys) => for {x <- xs; y <- ys} yield x + " " ++ y)
     } yield {

@@ -8,28 +8,21 @@ package mllib.perf
  *                     value suitable for a single machine, such as 0.001.
  *
  */
-class Config(SCALE_FACTOR: Double = 1.0) {
-  val SPARK_VERSION = 1.5
-
+class Config(SCALE_FACTOR: Double = 1.0, numTrials: Int = 1) {
   // ============================
   //  Test Configuration Options
   // ============================
   assert(SCALE_FACTOR > 0, "SCALE_FACTOR must be > 0.")
 
-  // If set, removes the first N trials for each test from all reported statistics. Useful for
-  // tests which have outlier behavior due to JIT and other system cache warm-ups. If any test
-  // returns fewer N + 1 results, an exception is thrown.
-  val IGNORED_TRIALS = 0
-
   // Set up VariableOptions. Note that giant cross product is done over all JavaOptionsSets + VariableOptions
   // passed to each test which may be combinations of those set up here.
 
   // The following options value sets are shared among all tests.
-  val COMMON_OPTS = Seq(
+  var COMMON_OPTS = Seq(
     // How many times to run each experiment - used to warm up system caches.
     // This VariableOption should probably only have a single value (i.e., length 1)
     // since it doesn't make sense to have multiple values here.
-    VariableOption("num-trials", Seq(1)),
+    VariableOption("num-trials", Seq(numTrials)),
     // Extra pause added between trials, in seconds. For runs with large amounts
     // of shuffle data, this gives time for buffer cache write-back.
     VariableOption("inter-trial-wait", Seq(3))
@@ -38,9 +31,7 @@ class Config(SCALE_FACTOR: Double = 1.0) {
   // ================== //
   //  MLlib Test Setup  //
   // ================== //
-
   var MLLIB_TESTS = Seq[TestInstance]()
-  val MLLIB_PERF_TEST_RUNNER = "mllib.perf.TestRunner"
 
   // Set this to 1.0, 1.1, 1.2, ... (the major version) to test MLlib with a particular Spark version.
   // Note: You should also build mllib-perf using -Dspark.version to specify the same version.
@@ -48,7 +39,7 @@ class Config(SCALE_FACTOR: Double = 1.0) {
   //  * Build Spark locally by running `build/sbt assembly; build/sbt publishLocal` in the Spark root directory
   //  * Set `USE_CLUSTER_SPARK = true` and `MLLIB_SPARK_VERSION = {desired Spark version, e.g. 1.5}`
   //  * Don't use PREP_MLLIB_TESTS = true; instead manually run `cd mllib-tests; sbt/sbt -Dspark.version=1.5.0-SNAPSHOT clean assembly` to build perf tests
-  val MLLIB_SPARK_VERSION = 1.5
+  var MLLIB_SPARK_VERSION = 1.5
 
   // The following options value sets are shared among all tests of
   // operations on MLlib algorithms.
@@ -98,7 +89,7 @@ class Config(SCALE_FACTOR: Double = 1.0) {
     VariableOption("loss", Seq("l2"))
   )
 
-  MLLIB_TESTS ++= Seq(TestInstance("glm-regression", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+  MLLIB_TESTS ++= Seq(TestInstance("glm-regression", SCALE_FACTOR,
     Seq(ConstantOption("glm-regression")) ++ MLLIB_GLM_REGRESSION_TEST_OPTS))
 
   // Classification Tests //
@@ -115,7 +106,7 @@ class Config(SCALE_FACTOR: Double = 1.0) {
     VariableOption("loss", Seq("logistic", "hinge"))
   )
 
-  MLLIB_TESTS ++= Seq(TestInstance("glm-classification", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+  MLLIB_TESTS ++= Seq(TestInstance("glm-classification", SCALE_FACTOR,
     Seq(ConstantOption("glm-classification")) ++ MLLIB_GLM_CLASSIFICATION_TEST_OPTS))
 
   val NAIVE_BAYES_TEST_OPTS = MLLIB_REGRESSION_CLASSIFICATION_TEST_OPTS ++ Seq(
@@ -129,7 +120,7 @@ class Config(SCALE_FACTOR: Double = 1.0) {
     VariableOption("model-type", Seq("multinomial"))
   )
 
-  MLLIB_TESTS ++= Seq(TestInstance("naive-bayes", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+  MLLIB_TESTS ++= Seq(TestInstance("naive-bayes", SCALE_FACTOR,
     Seq(ConstantOption("naive-bayes")) ++ NAIVE_BAYES_TEST_OPTS))
 
   if (MLLIB_SPARK_VERSION >= 1.4) {
@@ -143,7 +134,7 @@ class Config(SCALE_FACTOR: Double = 1.0) {
       // MLLIB_REGRESSION_CLASSIFICATION_TEST_OPTS + [
       VariableOption("model-type", Seq("bernoulli"))
     )
-    MLLIB_TESTS ++= Seq(TestInstance("naive-bayes-bernoulli", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+    MLLIB_TESTS ++= Seq(TestInstance("naive-bayes-bernoulli", SCALE_FACTOR,
       Seq(ConstantOption("naive-bayes")) ++ NAIVE_BAYES_TEST_OPTS_BERNOULLI))
   }
 
@@ -196,7 +187,7 @@ class Config(SCALE_FACTOR: Double = 1.0) {
     VariableOption("feature-subset-strategy", Seq("auto"))
   )
 
-  MLLIB_TESTS ++= Seq(TestInstance("decision-tree", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+  MLLIB_TESTS ++= Seq(TestInstance("decision-tree", SCALE_FACTOR,
     Seq(ConstantOption("decision-tree")) ++ MLLIB_DECISION_TREE_TEST_OPTS))
 
   // Recommendation Tests //
@@ -217,7 +208,7 @@ class Config(SCALE_FACTOR: Double = 1.0) {
     FlagSet("implicit-prefs", Seq(false))
   )
 
-  MLLIB_TESTS ++= Seq(TestInstance("als", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+  MLLIB_TESTS ++= Seq(TestInstance("als", SCALE_FACTOR,
     Seq(ConstantOption("als")) ++ MLLIB_RECOMMENDATION_TEST_OPTS))
 
   // Clustering Tests //
@@ -225,14 +216,14 @@ class Config(SCALE_FACTOR: Double = 1.0) {
     // The number of points
     VariableOption("num-points", Seq(1000000), canScale = true),
     // The number of features per point
-    VariableOption("num-columns", Seq(10000), canScale = false),
+    VariableOption("num-columns", Seq(2000), canScale = false),
     // The number of centers
     VariableOption("num-centers", Seq(20)),
     // The number of iterations for KMeans
     VariableOption("num-iterations", Seq(20))
   )
 
-  MLLIB_TESTS ++= Seq(TestInstance("kmeans", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+  MLLIB_TESTS ++= Seq(TestInstance("kmeans", SCALE_FACTOR,
     Seq(ConstantOption("kmeans")) ++ MLLIB_CLUSTERING_TEST_OPTS))
 
   val MLLIB_GMM_TEST_OPTS = MLLIB_COMMON_OPTS ++ Seq(
@@ -242,7 +233,7 @@ class Config(SCALE_FACTOR: Double = 1.0) {
     VariableOption("num-iterations", Seq(20)))
 
   if (MLLIB_SPARK_VERSION >= 1.3) {
-    MLLIB_TESTS ++= Seq(TestInstance("gmm", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+    MLLIB_TESTS ++= Seq(TestInstance("gmm", SCALE_FACTOR,
       Seq(ConstantOption("gmm")) ++ MLLIB_GMM_TEST_OPTS))
   }
 
@@ -254,12 +245,12 @@ class Config(SCALE_FACTOR: Double = 1.0) {
     VariableOption("document-length", Seq(100)))
 
   if (MLLIB_SPARK_VERSION >= 1.4) {
-    MLLIB_TESTS ++= Seq(TestInstance("emlda", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+    MLLIB_TESTS ++= Seq(TestInstance("emlda", SCALE_FACTOR,
       Seq(ConstantOption("emlda")) ++ MLLIB_LDA_TEST_OPTS))
   }
 
   if (MLLIB_SPARK_VERSION >= 1.4) {
-    MLLIB_TESTS ++= Seq(TestInstance("onlinelda", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+    MLLIB_TESTS ++= Seq(TestInstance("onlinelda", SCALE_FACTOR,
       Seq(ConstantOption("onlinelda")) ++ MLLIB_LDA_TEST_OPTS))
   }
 
@@ -282,13 +273,13 @@ class Config(SCALE_FACTOR: Double = 1.0) {
     VariableOption("rank", Seq(10), canScale = false)
   )
 
-  MLLIB_TESTS ++= Seq(TestInstance("svd", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+  MLLIB_TESTS ++= Seq(TestInstance("svd", SCALE_FACTOR,
     Seq(ConstantOption("svd")) ++ MLLIB_BIG_LINALG_TEST_OPTS))
 
-  MLLIB_TESTS ++= Seq(TestInstance("pca", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+  MLLIB_TESTS ++= Seq(TestInstance("pca", SCALE_FACTOR,
     Seq(ConstantOption("pca")) ++ MLLIB_LINALG_TEST_OPTS))
 
-  MLLIB_TESTS ++= Seq(TestInstance("summary-statistics", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+  MLLIB_TESTS ++= Seq(TestInstance("summary-statistics", SCALE_FACTOR,
     Seq(ConstantOption("summary-statistics")) ++
       MLLIB_LINALG_TEST_OPTS))
 
@@ -299,7 +290,7 @@ class Config(SCALE_FACTOR: Double = 1.0) {
     VariableOption("block-size", Seq(1024), canScale = false))
 
   if (MLLIB_SPARK_VERSION >= 1.3) {
-    MLLIB_TESTS ++= Seq(TestInstance("block-matrix-mult", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+    MLLIB_TESTS ++= Seq(TestInstance("block-matrix-mult", SCALE_FACTOR,
       Seq(ConstantOption("block-matrix-mult")) ++ MLLIB_BLOCK_MATRIX_MULT_TEST_OPTS))
   }
 
@@ -327,19 +318,19 @@ class Config(SCALE_FACTOR: Double = 1.0) {
       VariableOption("num-cols", Seq(0), canScale = false))
 
   if (MLLIB_SPARK_VERSION >= 1.1) {
-    MLLIB_TESTS ++= Seq(TestInstance("pearson", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+    MLLIB_TESTS ++= Seq(TestInstance("pearson", SCALE_FACTOR,
       Seq(ConstantOption("pearson")) ++ MLLIB_PEARSON_TEST_OPTS))
 
-    MLLIB_TESTS ++= Seq(TestInstance("spearman", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+    MLLIB_TESTS ++= Seq(TestInstance("spearman", SCALE_FACTOR,
       Seq(ConstantOption("spearman")) ++ MLLIB_SPEARMAN_TEST_OPTS))
 
-    MLLIB_TESTS ++= Seq(TestInstance("chi-sq-feature", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+    MLLIB_TESTS ++= Seq(TestInstance("chi-sq-feature", SCALE_FACTOR,
       Seq(ConstantOption("chi-sq-feature")) ++ MLLIB_CHI_SQ_FEATURE_TEST_OPTS))
 
-    MLLIB_TESTS ++= Seq(TestInstance("chi-sq-gof", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+    MLLIB_TESTS ++= Seq(TestInstance("chi-sq-gof", SCALE_FACTOR,
       Seq(ConstantOption("chi-sq-gof")) ++ MLLIB_CHI_SQ_GOF_TEST_OPTS))
 
-    MLLIB_TESTS ++= Seq(TestInstance("chi-sq-mat", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+    MLLIB_TESTS ++= Seq(TestInstance("chi-sq-mat", SCALE_FACTOR,
       Seq(ConstantOption("chi-sq-mat")) ++ MLLIB_CHI_SQ_MAT_TEST_OPTS))
   }
 
@@ -356,7 +347,7 @@ class Config(SCALE_FACTOR: Double = 1.0) {
 
   if (MLLIB_SPARK_VERSION >= 1.3) {
     // TODO: make it work in 1.2
-    MLLIB_TESTS ++= Seq(TestInstance("word2vec", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+    MLLIB_TESTS ++= Seq(TestInstance("word2vec", SCALE_FACTOR,
       Seq(ConstantOption("word2vec")) ++ MLLIB_WORD2VEC_TEST_OPTS))
   }
 
@@ -371,21 +362,21 @@ class Config(SCALE_FACTOR: Double = 1.0) {
       VariableOption("min-support", Seq(0.01), canScale = false))
 
   if (MLLIB_SPARK_VERSION >= 1.3) {
-    MLLIB_TESTS ++= Seq(TestInstance("fp-growth", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+    MLLIB_TESTS ++= Seq(TestInstance("fp-growth", SCALE_FACTOR,
       Seq(ConstantOption("fp-growth")) ++ MLLIB_FP_GROWTH_TEST_OPTS))
   }
   // TODO: tune test size to have runtime within 30-60 seconds
   val MLLIB_PREFIX_SPAN_TEST_OPTS = MLLIB_FPM_TEST_OPTS ++ Seq(
-    VariableOption("num-sequences", Seq(5000), canScale = false),
-    VariableOption("avg-sequence-size", Seq(5), canScale = false),
+    VariableOption("num-sequences", Seq(5000000), canScale = false),
+    VariableOption("avg-sequence-size", Seq(10), canScale = false),
     VariableOption("avg-itemset-size", Seq(1), canScale = false),
     VariableOption("num-items", Seq(100), canScale = false),
-    VariableOption("min-support", Seq(0.5), canScale = false),
+    VariableOption("min-support", Seq(0.1), canScale = false),
     VariableOption("max-pattern-len", Seq(10), canScale = false),
     VariableOption("max-local-proj-db-size", Seq(32000000), canScale = false))
 
   if (MLLIB_SPARK_VERSION >= 1.5) {
-    MLLIB_TESTS ++= Seq(TestInstance("prefix-span", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+    MLLIB_TESTS ++= Seq(TestInstance("prefix-span", SCALE_FACTOR,
       Seq(ConstantOption("prefix-span")) ++ MLLIB_PREFIX_SPAN_TEST_OPTS))
   }
 }
