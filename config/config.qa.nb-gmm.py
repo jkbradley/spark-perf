@@ -449,6 +449,16 @@ NAIVE_BAYES_TEST_OPTS = MLLIB_REGRESSION_CLASSIFICATION_TEST_OPTS + [
     OptionSet("nb-lambda", [1.0]),
 ]
 
+MLLIB_GMM_TEST_OPTS = MLLIB_COMMON_OPTS + [
+    OptionSet("num-points", [1000000], can_scale=True),
+    OptionSet("num-columns", [100], can_scale=False),
+    OptionSet("num-centers", [20], can_scale=False),
+    OptionSet("num-iterations", [20])]
+
+if MLLIB_SPARK_VERSION >= 1.3:
+    MLLIB_TESTS += [("gmm", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+                     MLLIB_JAVA_OPTS, [ConstantOption("gmm")] + MLLIB_GMM_TEST_OPTS)]
+
 # Python MLlib tests
 PYTHON_MLLIB_TESTS = []
 
