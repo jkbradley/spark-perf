@@ -454,8 +454,6 @@ NAIVE_BAYES_TEST_OPTS = MLLIB_REGRESSION_CLASSIFICATION_TEST_OPTS + [
     OptionSet("scale-factor", [1.0]),
     # Naive Bayes smoothing lambda.
     OptionSet("nb-lambda", [1.0]),
-    # Model type: either Multinomial or Bernoulli
-    OptionSet("model-type", ["multinomial"]),
 ]
 
 MLLIB_TESTS += [("naive-bayes", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
