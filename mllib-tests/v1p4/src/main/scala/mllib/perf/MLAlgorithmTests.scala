@@ -424,7 +424,7 @@ class NaiveBayesTest(sc: SparkContext)
   override def runTest(rdd: RDD[LabeledPoint]): NaiveBayesModel = {
     val lambda = doubleOptionValue(SMOOTHING)
 
-    val modelType = stringOptionValue(MODEL_TYPE)
+    val modelType = "multinomial"
     NaiveBayes.train(rdd, lambda, modelType)
   }
 }

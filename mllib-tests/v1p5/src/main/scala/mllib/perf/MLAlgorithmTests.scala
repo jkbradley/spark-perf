@@ -426,10 +426,8 @@ class NaiveBayesTest(sc: SparkContext)
   val THRESHOLD =  ("per-negative",   "probability for a negative label during data generation")
   val SCALE =  ("scale-factor",   "scale factor for the noise during data generation")
   val SMOOTHING =     ("nb-lambda",   "the smoothing parameter lambda for Naive Bayes")
-  val MODEL_TYPE = ("model-type", "either multinomial (default) or bernoulli")
 
   doubleOptions = doubleOptions ++ Seq(THRESHOLD, SCALE, SMOOTHING)
-  stringOptions = stringOptions ++ Seq(MODEL_TYPE)
   val options = intOptions ++ stringOptions  ++ booleanOptions ++ doubleOptions ++ longOptions
   addOptionsToParser()
 
@@ -441,7 +439,7 @@ class NaiveBayesTest(sc: SparkContext)
 
     val threshold: Double = doubleOptionValue(THRESHOLD)
     val sf: Double = doubleOptionValue(SCALE)
-    val modelType = stringOptionValue(MODEL_TYPE)
+    val modelType = "multinomial"
 
     val data = if (modelType == "bernoulli") {
       DataGenerator.generateBinaryLabeledPoints(sc,
@@ -475,7 +473,7 @@ class NaiveBayesTest(sc: SparkContext)
   override def runTest(rdd: RDD[LabeledPoint]): NaiveBayesModel = {
     val lambda = doubleOptionValue(SMOOTHING)
 
-    val modelType = stringOptionValue(MODEL_TYPE)
+    val modelType = "multinomial"
     NaiveBayes.train(rdd, lambda, modelType)
   }
 }
