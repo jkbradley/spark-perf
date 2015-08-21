@@ -16,7 +16,7 @@ object Config {
   // number of records in a generated dataset) if you are running the tests with more
   // or fewer nodes. When developing new test suites, you might want to set this to a small
   // value suitable for a single machine, such as 0.001.
-  val SCALE_FACTOR = 0.001
+  val SCALE_FACTOR = 0.0001
   assert(SCALE_FACTOR > 0, "SCALE_FACTOR must be > 0.")
 
   // If set, removes the first N trials for each test from all reported statistics. Useful for
@@ -58,7 +58,7 @@ object Config {
   var MLLIB_COMMON_OPTS = COMMON_OPTS ++ Seq(
     // The number of input partitions.
     // The default setting is suitable for a 16-node m3.2xlarge EC2 cluster.
-    VariableOption("num-partitions", Seq(128), can_scale = true),
+    VariableOption("num-partitions", Seq(128), canScale = true),
     // A random seed to make tests reproducable.
     VariableOption("random-seed", Seq(5))
   )
@@ -68,9 +68,9 @@ object Config {
   // Regression and Classification Tests //
   val MLLIB_REGRESSION_CLASSIFICATION_TEST_OPTS = MLLIB_COMMON_OPTS ++ Seq(
     // The number of rows or examples
-    VariableOption("num-examples", Seq(1000000), can_scale = true),
+    VariableOption("num-examples", Seq(1000000), canScale = true),
     // The number of features per example
-    VariableOption("num-features", Seq(10000), can_scale = false)
+    VariableOption("num-features", Seq(10000), canScale = false)
   )
 
   // Generalized Linear Model (GLM) Tests //
@@ -153,22 +153,22 @@ object Config {
   // Decision Trees //
   var MLLIB_DECISION_TREE_TEST_OPTS = MLLIB_COMMON_OPTS ++ Seq(
     // The number of rows or examples
-    VariableOption("num-examples", Seq(1000000), can_scale = true),
+    VariableOption("num-examples", Seq(1000000), canScale = true),
     // The number of features per example
-    VariableOption("num-features", Seq(500), can_scale = false),
+    VariableOption("num-features", Seq(500), canScale = false),
     // Type of label: 0 indicates regression, 2+ indicates classification with this many classes
     // Note: multi-class (>2) is not supported in Spark 1.0.
-    VariableOption("label-type", Seq(0, 2), can_scale = false),
+    VariableOption("label-type", Seq(0, 2), canScale = false),
     // Fraction of features which are categorical
-    VariableOption("frac-categorical-features", Seq(0.5), can_scale = false),
+    VariableOption("frac-categorical-features", Seq(0.5), canScale = false),
     // Fraction of categorical features which are binary. Others have 20 categories.
-    VariableOption("frac-binary-features", Seq(0.5), can_scale = false),
+    VariableOption("frac-binary-features", Seq(0.5), canScale = false),
     // Depth of true decision tree model used to label examples.
     // WARNING: The meaning of depth changed from Spark 1.0 to Spark 1.1:
     //          depth=N for Spark 1.0 should be depth=N-1 for Spark 1.1
-    VariableOption("tree-depth", Seq(5, 10), can_scale = false),
+    VariableOption("tree-depth", Seq(5, 10), canScale = false),
     // Maximum number of bins for the decision tree learning algorithm.
-    VariableOption("max-bins", Seq(32), can_scale = false)
+    VariableOption("max-bins", Seq(32), canScale = false)
   )
 
   var ensembleTypes = Seq[String]()
@@ -191,9 +191,9 @@ object Config {
     //If not given, hold out part of training data for validation.
     VariableOption("test-data", Seq("")),
     //Fraction of data to hold out for testing (ignored if given training and test dataset).
-    VariableOption("test-data-fraction", Seq(0.2), can_scale = false),
+    VariableOption("test-data-fraction", Seq(0.2), canScale = false),
     //Number of trees. If 1, then run DecisionTree. If >1, then run RandomForest.
-    VariableOption("num-trees", Seq(1, 10), can_scale = false),
+    VariableOption("num-trees", Seq(1, 10), canScale = false),
     //Feature subset sampling strategy: auto, all, sqrt, log2, onethird
     //(only used for RandomForest)
     VariableOption("feature-subset-strategy", Seq("auto"))
@@ -205,11 +205,11 @@ object Config {
   // Recommendation Tests //
   val MLLIB_RECOMMENDATION_TEST_OPTS = MLLIB_COMMON_OPTS ++ Seq(
     // The number of users
-    VariableOption("num-users", Seq(6000000), can_scale = true),
+    VariableOption("num-users", Seq(6000000), canScale = true),
     // The number of products
-    VariableOption("num-products", Seq(5000000), can_scale = false),
+    VariableOption("num-products", Seq(5000000), canScale = false),
     // The number of ratings
-    VariableOption("num-ratings", Seq(50000000), can_scale = true),
+    VariableOption("num-ratings", Seq(50000000), canScale = true),
     // The number of iterations for ALS
     VariableOption("num-iterations", Seq(10)),
     // The rank of the factorized matrix model
@@ -226,9 +226,9 @@ object Config {
   // Clustering Tests //
   val MLLIB_CLUSTERING_TEST_OPTS = MLLIB_COMMON_OPTS ++ Seq(
     // The number of points
-    VariableOption("num-points", Seq(1000000), can_scale = true),
+    VariableOption("num-points", Seq(1000000), canScale = true),
     // The number of features per point
-    VariableOption("num-columns", Seq(10000), can_scale = false),
+    VariableOption("num-columns", Seq(10000), canScale = false),
     // The number of centers
     VariableOption("num-centers", Seq(20)),
     // The number of iterations for KMeans
@@ -239,20 +239,20 @@ object Config {
     Seq(ConstantOption("kmeans")) ++ MLLIB_CLUSTERING_TEST_OPTS))
 
   val MLLIB_GMM_TEST_OPTS = MLLIB_COMMON_OPTS ++ Seq(
-    VariableOption("num-points", Seq(1000000), can_scale = true),
-    VariableOption("num-columns", Seq(100), can_scale = false),
-    VariableOption("num-centers", Seq(20), can_scale = false),
+    VariableOption("num-points", Seq(1000000), canScale = true),
+    VariableOption("num-columns", Seq(100), canScale = false),
+    VariableOption("num-centers", Seq(20), canScale = false),
     VariableOption("num-iterations", Seq(20)))
 
   if (MLLIB_SPARK_VERSION >= 1.3) {
     MLLIB_TESTS ++= Seq(TestInstance("gmm", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
-      Seq(ConstantOption("gmm")) ++ MLLIB_CLUSTERING_TEST_OPTS))
+      Seq(ConstantOption("gmm")) ++ MLLIB_GMM_TEST_OPTS))
   }
 
   val MLLIB_LDA_TEST_OPTS = MLLIB_COMMON_OPTS ++ Seq(
-    VariableOption("num-documents", Seq(10000), can_scale = true),
-    VariableOption("num-vocab", Seq(1000), can_scale = false),
-    VariableOption("num-topics", Seq(20), can_scale = false),
+    VariableOption("num-documents", Seq(10000), canScale = true),
+    VariableOption("num-vocab", Seq(1000), canScale = false),
+    VariableOption("num-topics", Seq(20), canScale = false),
     VariableOption("num-iterations", Seq(20)),
     VariableOption("document-length", Seq(100)))
 
@@ -269,20 +269,20 @@ object Config {
   // Linear Algebra Tests //
   val MLLIB_LINALG_TEST_OPTS = MLLIB_COMMON_OPTS ++ Seq(
     // The number of rows for the matrix
-    VariableOption("num-rows", Seq(1000000), can_scale = true),
+    VariableOption("num-rows", Seq(1000000), canScale = true),
     // The number of columns for the matrix
-    VariableOption("num-cols", Seq(1000), can_scale = false),
+    VariableOption("num-cols", Seq(1000), canScale = false),
     // The number of top singular values wanted for SVD and PCA
-    VariableOption("rank", Seq(50), can_scale = false)
+    VariableOption("rank", Seq(50), canScale = false)
   )
   // Linear Algebra Tests which take more time (slightly smaller settings) //
   val MLLIB_BIG_LINALG_TEST_OPTS = MLLIB_COMMON_OPTS ++ Seq(
     // The number of rows for the matrix
-    VariableOption("num-rows", Seq(1000000), can_scale = true),
+    VariableOption("num-rows", Seq(1000000), canScale = true),
     // The number of columns for the matrix
-    VariableOption("num-cols", Seq(500), can_scale = false),
+    VariableOption("num-cols", Seq(500), canScale = false),
     // The number of top singular values wanted for SVD and PCA
-    VariableOption("rank", Seq(10), can_scale = false)
+    VariableOption("rank", Seq(10), canScale = false)
   )
 
   MLLIB_TESTS ++= Seq(TestInstance("svd", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
@@ -296,10 +296,10 @@ object Config {
       MLLIB_LINALG_TEST_OPTS))
 
   val MLLIB_BLOCK_MATRIX_MULT_TEST_OPTS = MLLIB_COMMON_OPTS ++ Seq(
-    VariableOption("m", Seq(20000), can_scale = true),
-    VariableOption("k", Seq(10000), can_scale = false),
-    VariableOption("n", Seq(10000), can_scale = false),
-    VariableOption("block-size", Seq(1024), can_scale = false))
+    VariableOption("m", Seq(20000), canScale = true),
+    VariableOption("k", Seq(10000), canScale = false),
+    VariableOption("n", Seq(10000), canScale = false),
+    VariableOption("block-size", Seq(1024), canScale = false))
 
   if (MLLIB_SPARK_VERSION >= 1.3) {
     MLLIB_TESTS ++= Seq(TestInstance("block-matrix-mult", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
@@ -310,24 +310,24 @@ object Config {
   val MLLIB_STATS_TEST_OPTS = MLLIB_COMMON_OPTS
 
   val MLLIB_PEARSON_TEST_OPTS = MLLIB_STATS_TEST_OPTS ++
-    Seq(VariableOption("num-rows", Seq(1000000), can_scale = true),
-      VariableOption("num-cols", Seq(1000), can_scale = false))
+    Seq(VariableOption("num-rows", Seq(1000000), canScale = true),
+      VariableOption("num-cols", Seq(1000), canScale = false))
 
   val MLLIB_SPEARMAN_TEST_OPTS = MLLIB_STATS_TEST_OPTS ++
-    Seq(VariableOption("num-rows", Seq(1000000), can_scale = true),
-      VariableOption("num-cols", Seq(100), can_scale = false))
+    Seq(VariableOption("num-rows", Seq(1000000), canScale = true),
+      VariableOption("num-cols", Seq(100), canScale = false))
 
   val MLLIB_CHI_SQ_FEATURE_TEST_OPTS = MLLIB_STATS_TEST_OPTS ++
-    Seq(VariableOption("num-rows", Seq(2000000), can_scale = true),
-      VariableOption("num-cols", Seq(500), can_scale = false))
+    Seq(VariableOption("num-rows", Seq(2000000), canScale = true),
+      VariableOption("num-cols", Seq(500), canScale = false))
 
   val MLLIB_CHI_SQ_GOF_TEST_OPTS = MLLIB_STATS_TEST_OPTS ++
-    Seq(VariableOption("num-rows", Seq(50000000), can_scale = true),
-      VariableOption("num-cols", Seq(0), can_scale = false))
+    Seq(VariableOption("num-rows", Seq(50000000), canScale = true),
+      VariableOption("num-cols", Seq(0), canScale = false))
 
   val MLLIB_CHI_SQ_MAT_TEST_OPTS = MLLIB_STATS_TEST_OPTS ++
-    Seq(VariableOption("num-rows", Seq(20000), can_scale = true),
-      VariableOption("num-cols", Seq(0), can_scale = false))
+    Seq(VariableOption("num-rows", Seq(20000), canScale = true),
+      VariableOption("num-cols", Seq(0), canScale = false))
 
   if (MLLIB_SPARK_VERSION >= 1.1) {
     MLLIB_TESTS ++= Seq(TestInstance("pearson", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
@@ -351,11 +351,11 @@ object Config {
   val MLLIB_FEATURE_TEST_OPTS = MLLIB_COMMON_OPTS
 
   val MLLIB_WORD2VEC_TEST_OPTS = MLLIB_FEATURE_TEST_OPTS ++
-    Seq(VariableOption("num-sentences", Seq(1000000), can_scale = true),
-      VariableOption("num-words", Seq(10000), can_scale = false),
-      VariableOption("vector-size", Seq(100), can_scale = false),
-      VariableOption("num-iterations", Seq(3), can_scale = false),
-      VariableOption("min-count", Seq(5), can_scale = false))
+    Seq(VariableOption("num-sentences", Seq(1000000), canScale = true),
+      VariableOption("num-words", Seq(10000), canScale = false),
+      VariableOption("vector-size", Seq(100), canScale = false),
+      VariableOption("num-iterations", Seq(3), canScale = false),
+      VariableOption("min-count", Seq(5), canScale = false))
 
   if (MLLIB_SPARK_VERSION >= 1.3) {
     // TODO: make it work in 1.2
@@ -368,10 +368,10 @@ object Config {
   val MLLIB_FPM_TEST_OPTS = MLLIB_COMMON_OPTS
 
   val MLLIB_FP_GROWTH_TEST_OPTS = MLLIB_FPM_TEST_OPTS ++
-    Seq(VariableOption("num-baskets", Seq(5000000), can_scale = true),
-      VariableOption("avg-basket-size", Seq(10), can_scale = false),
-      VariableOption("num-items", Seq(1000), can_scale = false),
-      VariableOption("min-support", Seq(0.01), can_scale = false))
+    Seq(VariableOption("num-baskets", Seq(5000000), canScale = true),
+      VariableOption("avg-basket-size", Seq(10), canScale = false),
+      VariableOption("num-items", Seq(1000), canScale = false),
+      VariableOption("min-support", Seq(0.01), canScale = false))
 
   if (MLLIB_SPARK_VERSION >= 1.3) {
     MLLIB_TESTS ++= Seq(TestInstance("fp-growth", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
@@ -379,13 +379,13 @@ object Config {
   }
   // TODO: tune test size to have runtime within 30-60 seconds
   val MLLIB_PREFIX_SPAN_TEST_OPTS = MLLIB_FPM_TEST_OPTS ++ Seq(
-    VariableOption("num-sequences", Seq(5000), can_scale = false),
-    VariableOption("avg-sequence-size", Seq(5), can_scale = false),
-    VariableOption("avg-itemset-size", Seq(1), can_scale = false),
-    VariableOption("num-items", Seq(100), can_scale = false),
-    VariableOption("min-support", Seq(0.5), can_scale = false),
-    VariableOption("max-pattern-len", Seq(10), can_scale = false),
-    VariableOption("max-local-proj-db-size", Seq(32000000), can_scale = false))
+    VariableOption("num-sequences", Seq(5000), canScale = false),
+    VariableOption("avg-sequence-size", Seq(5), canScale = false),
+    VariableOption("avg-itemset-size", Seq(1), canScale = false),
+    VariableOption("num-items", Seq(100), canScale = false),
+    VariableOption("min-support", Seq(0.5), canScale = false),
+    VariableOption("max-pattern-len", Seq(10), canScale = false),
+    VariableOption("max-local-proj-db-size", Seq(32000000), canScale = false))
 
   if (MLLIB_SPARK_VERSION >= 1.5) {
     MLLIB_TESTS ++= Seq(TestInstance("prefix-span", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
