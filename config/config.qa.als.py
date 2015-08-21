@@ -500,11 +500,11 @@ if MLLIB_SPARK_VERSION >= 1.2:
 # Recommendation Tests #
 MLLIB_RECOMMENDATION_TEST_OPTS = MLLIB_COMMON_OPTS + [
      # The number of users
-     OptionSet("num-users", [6000000], can_scale=True),
+     OptionSet("num-users", [3000000], can_scale=True),
      # The number of products
-     OptionSet("num-products", [5000000], can_scale=False),
+     OptionSet("num-products", [2500000], can_scale=False),
      # The number of ratings
-     OptionSet("num-ratings", [50000000], can_scale=True),
+     OptionSet("num-ratings", [10000000], can_scale=True),
      # The number of iterations for ALS
      OptionSet("num-iterations", [10]),
      # The rank of the factorized matrix model
