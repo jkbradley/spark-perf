@@ -16,7 +16,7 @@ object Config {
   // number of records in a generated dataset) if you are running the tests with more
   // or fewer nodes. When developing new test suites, you might want to set this to a small
   // value suitable for a single machine, such as 0.001.
-  val SCALE_FACTOR = 0.0001
+  var SCALE_FACTOR = 0.25 // TODO: make a val, currently var for easy config
   assert(SCALE_FACTOR > 0, "SCALE_FACTOR must be > 0.")
 
   // If set, removes the first N trials for each test from all reported statistics. Useful for
