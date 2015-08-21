@@ -449,6 +449,10 @@ NAIVE_BAYES_TEST_OPTS = MLLIB_REGRESSION_CLASSIFICATION_TEST_OPTS + [
     OptionSet("nb-lambda", [1.0]),
 ]
 
+MLLIB_TESTS += [("naive-bayes", MLLIB_PERF_TEST_RUNNER, SCALE_FACTOR,
+                 MLLIB_JAVA_OPTS, [ConstantOption("naive-bayes")] +
+                 NAIVE_BAYES_TEST_OPTS)]
+
 MLLIB_GMM_TEST_OPTS = MLLIB_COMMON_OPTS + [
     OptionSet("num-points", [1000000], can_scale=True),
     OptionSet("num-columns", [100], can_scale=False),
