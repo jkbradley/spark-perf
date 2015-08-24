@@ -190,13 +190,13 @@ class NaiveBayesTest(PredictionTest):
 
     def createInputData(self):
         options = self.options
-        numTrain = options.num_points
+        numTrain = numpy.ceil(options.num_points * 1.25)
         numTest = int(options.num_points * 0.2)
         self.trainRDD = LabeledDataGenerator.generateGLMData(
-            self.sc, numTrain, options.num_columns,
+            self.sc, numTrain, options.num_features,
             options.num_partitions, options.random_seed, labelType=2)
         self.testRDD = LabeledDataGenerator.generateGLMData(
-            self.sc, numTest, options.num_columns,
+            self.sc, numTest, options.num_features,
             options.num_partitions, options.random_seed + 1, labelType=2)
 
     def evaluate(self, model, rdd):

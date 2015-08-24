@@ -166,15 +166,17 @@ class GLMRegressionTest(sc: SparkContext) extends GLMTests(sc) {
     (loss, regType) match {
       case ("l2", "none") =>
         val lr = new LinearRegressionWithSGD().setIntercept(addIntercept = true)
-        lr.optimizer.setNumIterations(numIterations).setStepSize(stepSize)
+        lr.optimizer.setNumIterations(numIterations).setStepSize(stepSize).setConvergenceTol(0.0)
         lr.run(rdd)
       case ("l2", "l1") =>
         val lasso = new LassoWithSGD().setIntercept(addIntercept = true)
         lasso.optimizer.setNumIterations(numIterations).setStepSize(stepSize).setRegParam(regParam)
+          .setConvergenceTol(0.0)
         lasso.run(rdd)
       case ("l2", "l2") =>
         val rr = new RidgeRegressionWithSGD().setIntercept(addIntercept = true)
         rr.optimizer.setNumIterations(numIterations).setStepSize(stepSize).setRegParam(regParam)
+          .setConvergenceTol(0.0)
         rr.run(rdd)
       case ("l2", "elastic-net") =>
         println("WARNING: Linear Regression with elastic-net in ML package uses LBFGS/OWLQN for optimization" +
@@ -268,7 +270,9 @@ class GLMClassificationTest(sc: SparkContext) extends GLMTests(sc) {
 
     (loss, regType, optimizer) match {
       case ("logistic", "none", "sgd") =>
-        LogisticRegressionWithSGD.train(rdd, numIterations, stepSize)
+        val lr = new LogisticRegressionWithSGD()
+        lr.optimizer.setStepSize(stepSize).setNumIterations(numIterations).setConvergenceTol(0.0)
+        lr.run(rdd)
       case ("logistic", "none", "lbfgs") =>
         println("WARNING: LogisticRegressionWithLBFGS ignores numIterations, stepSize" +
           " in this Spark version.")
@@ -282,7 +286,10 @@ class GLMClassificationTest(sc: SparkContext) extends GLMTests(sc) {
         val mlModel = lor.fit(rdd.toDF())
         new LogisticRegressionModel(mlModel.weights, mlModel.intercept)
       case ("hinge", "l2", "sgd") =>
-        SVMWithSGD.train(rdd, numIterations, stepSize, regParam)
+        val svm = new SVMWithSGD()
+        svm.optimizer.setNumIterations(numIterations).setStepSize(stepSize).setRegParam(regParam)
+          .setConvergenceTol(0.0)
+        svm.run(rdd)
       case _ =>
         throw new IllegalArgumentException(
           s"GLMClassificationTest given incompatible (loss, regType) = ($loss, $regType)." +
