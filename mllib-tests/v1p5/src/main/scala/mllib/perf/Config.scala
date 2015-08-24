@@ -6,9 +6,14 @@ package mllib.perf
  *                     number of records in a generated dataset) if you are running the tests with more
  *                     or fewer nodes. When developing new test suites, you might want to set this to a small
  *                     value suitable for a single machine, such as 0.001.
- *
+ * @param MLLIB_SPARK_VERSION Set this to 1.0, 1.1, 1.2, ... (the major version) to test MLlib with a particular Spark version.
+ *                            Note: You should also build mllib-perf using -Dspark.version to specify the same version.
+ *                            Note: To run perf tests against a snapshot version of Spark which has not yet been packaged into a release:
+ *                             * Build Spark locally by running `build/sbt assembly; build/sbt publishLocal` in the Spark root directory
+ *                             * Set `USE_CLUSTER_SPARK = true` and `MLLIB_SPARK_VERSION = {desired Spark version, e.g. 1.5}`
+ *                             * Don't use PREP_MLLIB_TESTS = true; instead manually run `cd mllib-tests; sbt/sbt -Dspark.version=1.5.0-SNAPSHOT clean assembly` to build perf tests
  */
-class Config(SCALE_FACTOR: Double = 1.0, numTrials: Int = 1) {
+class Config(SCALE_FACTOR: Double = 1.0, numTrials: Int = 1, MLLIB_SPARK_VERSION: Double = 1.5) {
   // ============================
   //  Test Configuration Options
   // ============================
@@ -32,14 +37,6 @@ class Config(SCALE_FACTOR: Double = 1.0, numTrials: Int = 1) {
   //  MLlib Test Setup  //
   // ================== //
   var MLLIB_TESTS = Seq[TestInstance]()
-
-  // Set this to 1.0, 1.1, 1.2, ... (the major version) to test MLlib with a particular Spark version.
-  // Note: You should also build mllib-perf using -Dspark.version to specify the same version.
-  // Note: To run perf tests against a snapshot version of Spark which has not yet been packaged into a release:
-  //  * Build Spark locally by running `build/sbt assembly; build/sbt publishLocal` in the Spark root directory
-  //  * Set `USE_CLUSTER_SPARK = true` and `MLLIB_SPARK_VERSION = {desired Spark version, e.g. 1.5}`
-  //  * Don't use PREP_MLLIB_TESTS = true; instead manually run `cd mllib-tests; sbt/sbt -Dspark.version=1.5.0-SNAPSHOT clean assembly` to build perf tests
-  var MLLIB_SPARK_VERSION = 1.5
 
   // The following options value sets are shared among all tests of
   // operations on MLlib algorithms.
@@ -365,7 +362,6 @@ class Config(SCALE_FACTOR: Double = 1.0, numTrials: Int = 1) {
     MLLIB_TESTS ++= Seq(TestInstance("fp-growth", SCALE_FACTOR,
       Seq(ConstantOption("fp-growth")) ++ MLLIB_FP_GROWTH_TEST_OPTS))
   }
-  // TODO: tune test size to have runtime within 30-60 seconds
   val MLLIB_PREFIX_SPAN_TEST_OPTS = MLLIB_FPM_TEST_OPTS ++ Seq(
     VariableOption("num-sequences", Seq(5000000), canScale = false),
     VariableOption("avg-sequence-size", Seq(10), canScale = false),
