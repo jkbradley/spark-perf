@@ -101,7 +101,43 @@ The following sections describe some additional settings to change for certain t
    ```
 3. Uncomment at least one `SPARK_TESTS` entry.
 
+# Running MLLib perf tests as a library
+This skips the cluster setup / SparkContext management taken care of by
+`bin/run` and `lib/sparkperf/main.py`, assuming that you have a cluster
+running Spark you can add JARs into the classpath.
+
+This is useful if you are running perf tests in a managed environment
+(e.g.  Databricks notebooks).
+
+Configs for the JAR are managed in
+`mllib-tests/v1p5/src/main/scala/mllib/perf/Config.scala`.
+
+1. `cd mllib-tests/ && sbt/sbt -Dspark.version=1.5.0-SNAPSHOT clean assembly`
+2. Upload `mllib-tests/target/mllib-perf-tests-assembly.jar` library to
+   Databricks and attach to cluster.
+3. Create a `Config` object with desired `SCALE_FACTOR` and `numTrials`
+   ```scala
+   val config = new Config(SCALE_FACTOR=SCALE_FACTOR, numTrials=numTrials)``
+   ```
+   (Optional) Modify `config.MLLIB_TESTS` to only run the tests you want
+   ```scala
+   val testsToRun = Set(
+     "decision-tree",
+     "fp-growth",
+     "kmeans",
+     "word2vec"
+   )
+   config.MLLIB_TESTS = config.MLLIB_TESTS.filter {
+     case TestInstance(shortName, _, _) => testsToRun.contains(shortName)
+   }
+   ```
+4. Run the tests, passing the `sqlContext`, `config`, and a filepath (or
+   DBFS mount to S3 bucket) for writing DataFrame results to:
+   ```scala
+   val (failedTests, testResults) = PerfSuite.runSuite(sqlContext, config, s"/$mountName")
+   ```
 
 ## License
 
 This project is licensed under the Apache 2.0 License. See LICENSE for full license text.
+

@@ -17,6 +17,7 @@ object MLlibTestsBuild extends Build {
     organization := "org.spark-project",
     version := "0.1",
     scalaVersion := "2.10.4",
+    // default to latest snapshot so IntelliJ SBT plugin uses correct lib for autocomplete
     sparkVersion := sys.props.getOrElse("spark.version", default="1.5.0-SNAPSHOT"),
     libraryDependencies ++= Seq(
       "net.sf.jopt-simple" % "jopt-simple" % "4.6",
