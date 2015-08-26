@@ -408,7 +408,9 @@ MLLIB_GLM_TEST_OPTS = MLLIB_REGRESSION_CLASSIFICATION_TEST_OPTS + [
     # Regularization type: none, l1, l2
     OptionSet("reg-type", ["none"]),
     # Regularization parameter
-    OptionSet("reg-param", [0.1])
+    OptionSet("reg-param", [0.1]),
+    # Elastic net param
+    OptionSet("elastic-net-param", [0.0, 1.0]),
 ]
 if MLLIB_SPARK_VERSION >= 1.1:
     MLLIB_GLM_TEST_OPTS += [
