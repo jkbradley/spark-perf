@@ -415,7 +415,7 @@ MLLIB_GLM_TEST_OPTS = MLLIB_REGRESSION_CLASSIFICATION_TEST_OPTS + [
 if MLLIB_SPARK_VERSION >= 1.1:
     MLLIB_GLM_TEST_OPTS += [
         # Optimization algorithm: sgd, lbfgs
-        OptionSet("optimizer", ["sgd"])
+        OptionSet("optimizer", ["lbfgs"])
     ]
 
 # GLM Regression Tests #
