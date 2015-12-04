@@ -17,7 +17,7 @@ object MLlibTestsBuild extends Build {
     organization := "org.spark-project",
     version := "0.1",
     scalaVersion := "2.10.4",
-    sparkVersion := sys.props.getOrElse("spark.version", default="1.5.2"),
+    sparkVersion := sys.props.getOrElse("spark.version", default="1.6.0-SNAPSHOT"),
     libraryDependencies ++= Seq(
       "net.sf.jopt-simple" % "jopt-simple" % "4.6",
       "org.scalatest" %% "scalatest" % "2.2.1" % "test",
@@ -33,7 +33,6 @@ object MLlibTestsBuild extends Build {
     settings = assemblySettings ++ commonSettings ++ Seq(
       scalaSource in Compile := {
         val targetFolder = sparkVersion.value match {
-          case v if v.startsWith("1.4.") => "v1p4"
           case v if v.startsWith("1.5.") => "v1p5"
           case v if v.startsWith("1.6.") =>
             "v1p5" // acceptable for now, but change later when new algs are added
