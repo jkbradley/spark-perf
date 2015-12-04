@@ -9,7 +9,6 @@ import org.apache.spark.ml.classification._
 import org.apache.spark.ml.regression._
 import org.apache.spark.mllib.linalg.{Vector, Vectors}
 import org.apache.spark.mllib.regression.LabeledPoint
-import org.apache.spark.mllib.tree.model.{GradientBoostedTreesModel, RandomForestModel}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.SQLContext
@@ -73,8 +72,6 @@ abstract class RegressionAndClassificationTests[M](sc: SparkContext) extends Per
 
 // Decision-tree
 sealed trait TreeBasedModel
-case class MLlibRFModel(model: RandomForestModel) extends TreeBasedModel
-case class MLlibGBTModel(model: GradientBoostedTreesModel) extends TreeBasedModel
 case class MLDTRegressionModel(model: DecisionTreeRegressionModel) extends TreeBasedModel
 case class MLDTClassificationModel(model: DecisionTreeClassificationModel) extends TreeBasedModel
 case class MLRFRegressionModel(model: RandomForestRegressionModel) extends TreeBasedModel
@@ -120,8 +117,8 @@ abstract class DecisionTreeTests(sc: SparkContext)
   def validate(model: TreeBasedModel, rdd: RDD[LabeledPoint]): Double = {
     val numExamples = rdd.count()
     val predictions: RDD[(Double, Double)] = model match {
-      case MLlibRFModel(rfModel) => rfModel.predict(rdd.map(_.features)).zip(rdd.map(_.label))
-      case MLlibGBTModel(gbtModel) => gbtModel.predict(rdd.map(_.features)).zip(rdd.map(_.label))
+      case MLDTRegressionModel(rfModel) => makePredictions(rfModel, rdd)
+      case MLDTClassificationModel(rfModel) => makePredictions(rfModel, rdd)
       case MLRFRegressionModel(rfModel) => makePredictions(rfModel, rdd)
       case MLRFClassificationModel(rfModel) => makePredictions(rfModel, rdd)
       case MLGBTRegressionModel(gbtModel) => makePredictions(gbtModel, rdd)
