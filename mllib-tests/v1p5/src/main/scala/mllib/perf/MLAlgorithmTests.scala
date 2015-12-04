@@ -239,7 +239,6 @@ class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
             .setMaxDepth(treeDepth)
             .setMaxBins(maxBins)
             .setAlgorithm(algType)
-            .setSeed(this.getRandomSeed)
             .fit(dataset)
           MLDTRegressionModel(model)
           /*
@@ -276,7 +275,6 @@ class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
             .setMaxDepth(treeDepth)
             .setMaxBins(maxBins)
             .setAlgorithm(algType)
-            .setSeed(this.getRandomSeed)
             .fit(dataset)
           MLDTClassificationModel(model)
           /*
