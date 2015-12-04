@@ -123,6 +123,8 @@ abstract class DecisionTreeTests(sc: SparkContext)
       case MLRFClassificationModel(rfModel) => makePredictions(rfModel, rdd)
       case MLGBTRegressionModel(gbtModel) => makePredictions(gbtModel, rdd)
       case MLGBTClassificationModel(gbtModel) => makePredictions(gbtModel, rdd)
+      case _ =>
+        throw new Exception(s"Unknown match error.  Got type: ${model.getClass.getName}")
     }
     val labelType: Int = intOptionValue(LABEL_TYPE)
     if (labelType == 0) {
