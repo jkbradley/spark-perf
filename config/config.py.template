@@ -422,7 +422,7 @@ MLLIB_DECISION_TREE_TEST_OPTS = MLLIB_COMMON_OPTS + [
     #  (Ignored if given training and test dataset, or if using synthetic data.)
     OptionSet("test-data-fraction", [0.2], can_scale=False),
     # Number of trees. If 1, then run DecisionTree. If >1, then run RandomForest.
-    OptionSet("num-trees", [1, 10], can_scale=False),
+    OptionSet("num-trees", [1], can_scale=False),
     # Feature subset sampling strategy: auto, all, sqrt, log2, onethird
     # (only used for RandomForest)
     OptionSet("feature-subset-strategy", ["auto"])
