@@ -103,7 +103,7 @@ abstract class DecisionTreeTests(sc: SparkContext)
   val NUM_TREES = ("num-trees", "Number of trees to train.  If 1, run DecisionTree.  If >1, run an ensemble method (RandomForest).")
   val FEATURE_SUBSET_STRATEGY =
     ("feature-subset-strategy", "Strategy for feature subset sampling. Supported: auto, all, sqrt, log2, onethird.")
-  val ALG_TYPE = ("alg-type", "Algorithm: by-row for original MLlib, by-col for Yggdrasil")
+  val ALG_TYPE = ("alg-type", "Algorithm: byRow for original MLlib, byCol for Yggdrasil")
 
   intOptions = intOptions ++ Seq(LABEL_TYPE, TREE_DEPTH, MAX_BINS, NUM_TREES)
   doubleOptions = doubleOptions ++ Seq(TEST_DATA_FRACTION, FRAC_CATEGORICAL_FEATURES, FRAC_BINARY_FEATURES)

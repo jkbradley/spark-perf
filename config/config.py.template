@@ -408,8 +408,8 @@ MLLIB_DECISION_TREE_TEST_OPTS = MLLIB_COMMON_OPTS + [
     OptionSet("tree-depth", [5, 10], can_scale=False),
     # Maximum number of bins for the decision tree learning algorithm.
     OptionSet("max-bins", [32], can_scale=False),
-    # Set algorithm to use: by-row = original MLlib, by-col = Yggdrasil
-    OptionSet("alg-type", ["by-row", "by-col"]),
+    # Set algorithm to use: byRow = original MLlib, byCol = Yggdrasil
+    OptionSet("alg-type", ["byRow", "byCol"]),
     # Ensemble types: DecisionTree
     #   Not yet supported: RandomForest, GradientBoostedTrees
     OptionSet("ensemble-type", ["DecisionTree"]),
