@@ -114,6 +114,29 @@ abstract class DecisionTreeTests(sc: SparkContext)
 
   protected var labelType = -1
 
+  override def run(): JValue = {
+    val algType: String = stringOptionValue(ALG_TYPE)
+    // Transpose dataset before timing "byCol"
+    val transposedDataset = algType match {
+      case "byRow" => None
+      case "byCol" => Some(TreeUtils.rowToColumnStoreDense(rdd.map(_.features)))
+      case _ => throw new IllegalArgumentException(s"Got unknown algType: $algType")
+    }
+
+    var start = System.currentTimeMillis()
+    val model = runTest(rdd, transposedDataset)
+    val trainingTime = (System.currentTimeMillis() - start).toDouble / 1000.0
+
+    start = System.currentTimeMillis()
+    val trainingMetric = validate(model, rdd)
+    val testTime = (System.currentTimeMillis() - start).toDouble / 1000.0
+
+    val testMetric = validate(model, testRdd)
+    Map("trainingTime" -> trainingTime, "testTime" -> testTime,
+      "trainingMetric" -> trainingMetric, "testMetric" -> testMetric)
+  }
+
+
   def validate(model: TreeBasedModel, rdd: RDD[LabeledPoint]): Double = {
     val numExamples = rdd.count()
     val predictions: RDD[(Double, Double)] = model match {
@@ -215,8 +238,12 @@ class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
     (splits, categoricalFeaturesInfo_, labelType)
   }
 
-  // TODO: generate DataFrame outside of `runTest` so it is not included in timing results
-  override def runTest(rdd: RDD[LabeledPoint]): TreeBasedModel = {
+  // Count dataset transposition time as part of training by default
+  override def runTest(rdd: RDD[LabeledPoint]): TreeBasedModel = runTest(rdd, None)
+
+  // Will use precomputed `transposedDataset` if available
+  def runTest(
+      rdd: RDD[LabeledPoint], transposedDataset: Option[RDD[(Int, Vector)]]): TreeBasedModel = {
     val treeDepth: Int = intOptionValue(TREE_DEPTH)
     val maxBins: Int = intOptionValue(MAX_BINS)
     val numTrees: Int = intOptionValue(NUM_TREES)
@@ -229,11 +256,6 @@ class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
         " Supported values: " + supportedTreeTypes.mkString(" "))
     }
     val dataset = DataGenerator.setMetadata(rdd, categoricalFeaturesInfo, labelType)
-    val transposedDataset = algType match {
-      case "byRow" => None
-      case "byCol" => Some(rowToColumnStoreDense(rdd.map(_.features)))
-      case _ => throw IllegalArgumentException(s"Got unknown algType: $algType")
-    }
     if (labelType == 0) {
       // Regression
       ensembleType match {
@@ -311,7 +333,9 @@ class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
         s"given to DecisionTreeTest: $labelType")
     }
   }
+}
 
+private[perf] object TreeUtils {
   /**
    * Convert a dataset of [[Vector]] from row storage to column storage.
    * This can take any [[Vector]] type but stores data as [[DenseVector]].
