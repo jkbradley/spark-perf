@@ -115,12 +115,15 @@ abstract class DecisionTreeTests(sc: SparkContext)
 
   protected var labelType = -1
 
+  def runTest(
+    rdd: RDD[LabeledPoint], transposedDataset: Option[RDD[(Int, Vector)]]): TreeBasedModel
+
   override def run(): JValue = {
     val algType: String = stringOptionValue(ALG_TYPE)
     // Transpose dataset before timing "byCol"
     val transposedDataset = algType match {
       case "byRow" => None
-      case "byCol" => Some(TreeUtils.rowToColumnStoreDense(rdd.map(_.features)))
+      case "byCol" => Some(TreeUtil.rowToColumnStoreDense(rdd.map(_.features)))
       case _ => throw new IllegalArgumentException(s"Got unknown algType: $algType")
     }
 
@@ -243,7 +246,7 @@ class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
   override def runTest(rdd: RDD[LabeledPoint]): TreeBasedModel = runTest(rdd, None)
 
   // Will use precomputed `transposedDataset` if available
-  def runTest(
+  override def runTest(
       rdd: RDD[LabeledPoint], transposedDataset: Option[RDD[(Int, Vector)]]): TreeBasedModel = {
     val treeDepth: Int = intOptionValue(TREE_DEPTH)
     val maxBins: Int = intOptionValue(MAX_BINS)
@@ -261,12 +264,15 @@ class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
       // Regression
       ensembleType match {
         case "DecisionTree" =>
-          val model = new DecisionTreeRegressor()
+          val dtRegressor = new DecisionTreeRegressor()
             .setImpurity("variance")
             .setMaxDepth(treeDepth)
             .setMaxBins(maxBins)
             .setAlgorithm(algType)
-            .fit(dataset, transposedDataset)
+          val model = transposedDataset match {
+            case None => dtRegressor.fit(dataset)
+            case Some(tDataset) => dtRegressor.fit(dataset, tDataset)
+          }
           MLDTRegressionModel(model)
           /*
         case "RandomForest" =>
@@ -297,12 +303,15 @@ class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
       // Classification
       ensembleType match {
         case "DecisionTree" =>
-          val model = new DecisionTreeClassifier()
+          val dtClassifier = new DecisionTreeClassifier()
             .setImpurity("gini")
             .setMaxDepth(treeDepth)
             .setMaxBins(maxBins)
             .setAlgorithm(algType)
-            .fit(dataset, transposedDataset)
+          val model = transposedDataset match {
+            case None => dtClassifier.fit(dataset)
+            case Some(tDataset) => dtClassifier.fit(dataset, tDataset)
+          }
           MLDTClassificationModel(model)
           /*
         case "RandomForest" =>
