@@ -13,6 +13,7 @@ import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.SQLContext
+import org.apache.spark.storage.StorageLevel
 
 import mllib.perf.util.{DataGenerator, DataLoader}
 
@@ -123,7 +124,12 @@ abstract class DecisionTreeTests(sc: SparkContext)
     // Transpose dataset before timing "byCol"
     val transposedDataset = algType match {
       case "byRow" => None
-      case "byCol" => Some(TreeUtil.rowToColumnStoreDense(rdd.map(_.features)))
+      case "byCol" => {
+        val colStore = TreeUtil.rowToColumnStoreDense(rdd.map(_.features))
+        colStore.persist(StorageLevel.MEMORY_AND_DISK)
+        colStore.count()
+        Some(colStore)
+      }
       case _ => throw new IllegalArgumentException(s"Got unknown algType: $algType")
     }
 
