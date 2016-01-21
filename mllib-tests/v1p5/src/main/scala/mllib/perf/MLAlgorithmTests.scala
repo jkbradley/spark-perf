@@ -7,11 +7,13 @@ import org.apache.spark.SparkContext
 import org.apache.spark.ml.PredictionModel
 import org.apache.spark.ml.classification._
 import org.apache.spark.ml.regression._
+import org.apache.spark.ml.tree.impl.TreeUtil
 import org.apache.spark.mllib.linalg.{Vector, Vectors}
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.SQLContext
+import org.apache.spark.storage.StorageLevel
 
 import mllib.perf.util.{DataGenerator, DataLoader}
 
@@ -114,6 +116,37 @@ abstract class DecisionTreeTests(sc: SparkContext)
 
   protected var labelType = -1
 
+  def runTest(
+    rdd: RDD[LabeledPoint], transposedDataset: Option[RDD[(Int, Vector)]]): TreeBasedModel
+
+  override def run(): JValue = {
+    val algType: String = stringOptionValue(ALG_TYPE)
+    // Transpose dataset before timing "byCol"
+    val transposedDataset = algType match {
+      case "byRow" => None
+      case "byCol" => {
+        val colStore = TreeUtil.rowToColumnStoreDense(rdd.map(_.features))
+        colStore.persist(StorageLevel.MEMORY_AND_DISK)
+        colStore.count()
+        Some(colStore)
+      }
+      case _ => throw new IllegalArgumentException(s"Got unknown algType: $algType")
+    }
+
+    var start = System.currentTimeMillis()
+    val model = runTest(rdd, transposedDataset)
+    val trainingTime = (System.currentTimeMillis() - start).toDouble / 1000.0
+
+    start = System.currentTimeMillis()
+    val trainingMetric = validate(model, rdd)
+    val testTime = (System.currentTimeMillis() - start).toDouble / 1000.0
+
+    val testMetric = validate(model, testRdd)
+    Map("trainingTime" -> trainingTime, "testTime" -> testTime,
+      "trainingMetric" -> trainingMetric, "testMetric" -> testMetric)
+  }
+
+
   def validate(model: TreeBasedModel, rdd: RDD[LabeledPoint]): Double = {
     val numExamples = rdd.count()
     val predictions: RDD[(Double, Double)] = model match {
@@ -215,8 +248,12 @@ class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
     (splits, categoricalFeaturesInfo_, labelType)
   }
 
-  // TODO: generate DataFrame outside of `runTest` so it is not included in timing results
-  override def runTest(rdd: RDD[LabeledPoint]): TreeBasedModel = {
+  // Count dataset transposition time as part of training by default
+  override def runTest(rdd: RDD[LabeledPoint]): TreeBasedModel = runTest(rdd, None)
+
+  // Will use precomputed `transposedDataset` if available
+  override def runTest(
+      rdd: RDD[LabeledPoint], transposedDataset: Option[RDD[(Int, Vector)]]): TreeBasedModel = {
     val treeDepth: Int = intOptionValue(TREE_DEPTH)
     val maxBins: Int = intOptionValue(MAX_BINS)
     val numTrees: Int = intOptionValue(NUM_TREES)
@@ -233,12 +270,15 @@ class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
       // Regression
       ensembleType match {
         case "DecisionTree" =>
-          val model = new DecisionTreeRegressor()
+          val dtRegressor = new DecisionTreeRegressor()
             .setImpurity("variance")
             .setMaxDepth(treeDepth)
             .setMaxBins(maxBins)
             .setAlgorithm(algType)
-            .fit(dataset)
+          val model = transposedDataset match {
+            case None => dtRegressor.fit(dataset)
+            case Some(tDataset) => dtRegressor.fit(dataset, tDataset)
+          }
           MLDTRegressionModel(model)
           /*
         case "RandomForest" =>
@@ -269,12 +309,15 @@ class DecisionTreeTest(sc: SparkContext) extends DecisionTreeTests(sc) {
       // Classification
       ensembleType match {
         case "DecisionTree" =>
-          val model = new DecisionTreeClassifier()
+          val dtClassifier = new DecisionTreeClassifier()
             .setImpurity("gini")
             .setMaxDepth(treeDepth)
             .setMaxBins(maxBins)
             .setAlgorithm(algType)
-            .fit(dataset)
+          val model = transposedDataset match {
+            case None => dtClassifier.fit(dataset)
+            case Some(tDataset) => dtClassifier.fit(dataset, tDataset)
+          }
           MLDTClassificationModel(model)
           /*
         case "RandomForest" =>

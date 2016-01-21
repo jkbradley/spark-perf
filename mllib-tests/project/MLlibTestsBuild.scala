@@ -24,7 +24,8 @@ object MLlibTestsBuild extends Build {
       "org.slf4j" % "slf4j-log4j12" % "1.7.2",
       "org.json4s" %% "json4s-native" % "3.2.9",
       "org.apache.spark" %% "spark-mllib" % sparkVersion.value % "provided"
-    )
+    ),
+    resolvers += Resolver.mavenLocal
   )
 
   lazy val root = Project(
